@@ -3,16 +3,7 @@ body {
     padding-top: 0;
     background-color: gray;
 }
-.modal-gallery {
-    width: auto;
-	max-height: none;
-	margin: 2em;
-	top: 0;
-	left: 0;
-	position: relative;
-	float: left;
-}
-.modal-gallery .modal-body {
+.modal-body {
 	max-height: none;
 }
 #drop {
@@ -54,13 +45,13 @@ body {
 .help {
     float: right;
 }
-#myModal {
-    width:800px;
-    margin-left:-400px;
-}
-
 .card-container {
     padding: 2%;
+    margin-left: 10px;
+    position: absolute;
+    top:0;
+    bottom:0;
+    overflow-y: scroll;
 }
 .card {
     background-color: white;
@@ -109,6 +100,7 @@ body {
     bottom: 0;
     left: 0;
     background: white;
+    overflow-y: scroll;
 }
 .toggle-panel {
     float: right;
@@ -118,6 +110,14 @@ body {
 }
 .deck.hidden {
     left: -390px;
+}
+.modal, .modal.fade.in { 
+    position: fixed; 
+    top: 3%; 
+    right: 3%; 
+    left: 3%; 
+    width: auto; 
+    margin: 0; 
 }
 @media screen and (min-width:800px) {
     .card-container {

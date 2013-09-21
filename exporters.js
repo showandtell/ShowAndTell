@@ -21,10 +21,10 @@ var exporters = {
             var zipped = zip.generate({
                 type:'blob'
             });
-            $('#download').html($('#download-notice').html());
-            var $downloadBtn = $('#download').find('.download');
-            $downloadBtn.attr('href', window.URL.createObjectURL(zipped));
-            $downloadBtn.attr('download', "deck.zip");
+            var $dbtn = $('<a class="btn btn-success download">Download</a>');
+            $dbtn.attr('href', window.URL.createObjectURL(zipped));
+            $dbtn.attr('download', "deck.zip");
+            $('#download').empty().append($dbtn);
         });
     },
     slideShow : function(deck){
