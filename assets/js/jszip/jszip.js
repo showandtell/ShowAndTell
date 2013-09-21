@@ -23,7 +23,7 @@ Usage:
  * @param {String=|ArrayBuffer=|Uint8Array=} data the data to load, if any (optional).
  * @param {Object=} options the options for creating this objects (optional).
  */
-window.MyJSZip = (function(){
+window.JSZip = (function(){
 var JSZip = function(data, options) {
    // object containing the files :
    // {

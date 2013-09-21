@@ -49,35 +49,7 @@ body {
     margin-bottom: 1em;
     padding: .5em;
 }
-.panel {
-    background-color: #f5f5f5;
-    border: 1px solid lightgray;
-    padding: 1em;
-    padding-top: .5em;
-    padding-bottom: .5em;
-}
-.panel label {
-    display: inline;
-    font-weight: bolder;
-}
-.panel input {
-    margin: 0;
-}
-.formImage {
-    /*
-    margin-right: auto;
-    margin-left: auto;
-    */
-    margin-bottom: 1em;
-}
-.formImage, .instructions {
-    margin-left: 20px;
-}
-@media screen and (max-width:800px) {
-    .formImage .instructions {
-        margin-left: 0;
-    }
-}
+
 
 .help {
     float: right;
@@ -88,48 +60,73 @@ body {
 }
 
 .card-container {
-    margin-left: 450px;
-    padding: 5%;
+    padding: 2%;
 }
 .card {
     background-color: white;
     -webkit-box-shadow:  5px 5px 1px 1px rgba(0, 0, 0, .5);
     box-shadow:  5px 5px 1px 1px rgba(0, 0, 0, .5);
-    padding: 1px;
+    padding: 4px;
 }
 
 .card-label {
     background-color: white;
-    border: 1px solid gray;
+    border-bottom: 1px solid gray;
+    overflow: hidden;
+    position: relative;
+    height: 50px;
 }
-.audio {
+.card-label > img {
+    opacity: 0.5;
+    position: absolute;
+    z-index: 0;
+    top: -50px;
+    right: 50px;
+}
+.widget {
+    padding: 1em;
+    padding-top: .5em;
+    padding-bottom: .5em;
+    margin: 1px;
+}
+.widget-0 {
     background-color: #6D93CB;
-    padding: 1em;
-    padding-top: .5em;
-    padding-bottom: .5em;
-    margin: 1px;
 }
-.text {
+.widget-1 {
     background-color: #73CECE;
-    padding: 1em;
-    padding-top: .5em;
-    padding-bottom: .5em;
-    margin: 1px;
 }
-.text textarea {
-    width: 100%;
-}
-.images {
+.widget-2 {
     background-color: #CB89F0;
-    padding: 1em;
-    padding-top: .5em;
-    padding-bottom: .5em;
-    margin: 1px;
+}
+.widget > textarea {
+    margin: auto;
 }
 .deck {
     width: 400px;
     position: absolute;
+    z-index: 10;
     top: 0;
     bottom: 0;
     left: 0;
+    background: white;
+}
+.toggle-panel {
+    float: right;
+    width: 10px;
+    height: 100%;
+    background-color: lightgray;
+}
+.deck.hidden {
+    left: -390px;
+}
+@media screen and (min-width:800px) {
+    .card-container {
+        margin-left: 400px;
+    }
+    .deck.hidden {
+        left: 0;
+    }
+    .toggle-panel {
+        display: none;
+    }
 }

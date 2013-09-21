@@ -12,103 +12,120 @@
 
     <body>
     
-        <div class="main">
-            
-            
-            <div class="deck">
-                <a class="btn btn-info help" href="#myModal" role="button" data-toggle="modal">Help</a>
-                <a class="btn btn-info help" href="#myModal" role="button" data-toggle="modal">Export</a>
-                <a class="btn btn-info help" href="#myModal" role="button" data-toggle="modal">Import</a>
-                <ul class="sortable">
-                    <li class="card-label" id="A">A
-                    <button class="btn btn-primary edit">edit</button>
-                    <button class="btn btn-danger remove">rm</button>
-                        
-                    </li>
-                    <li class="card-label" id="B">B</li>
+        <div id="download"></div>
+    
+        <div class="deck">
+            <div class="toggle-panel"></div>
+            <div class="navbar">
+              <div class="navbar-inner">
+                <a class="brand" href="#">Show &amp; Tell</a>
+                <ul class="nav">
+                  <li><a href="#helpModal" data-toggle="modal">Help</a></li>
+                  <li><a href="#">Import</a></li>
+                  <li><a href="#">Export</a></li>
                 </ul>
-                <button class="btn add">Add card</button>
-                <a>Show/Hide</a>
+              </div>
             </div>
             
-            <div class="card-container">
-            <a>previous</a>
-            <a>next</a>
-            <div class="output card">
+            <div class="sortable cards"></div>
+            <button class="btn add-card">Add card</button>
+            
+        </div>
+        
+        <div class="card-container">
+        <a>previous</a>
+        <a>next</a>
+        <div class="output card">
+            
+        </div>
+        </div>
+        
+        <div id="errors"></div>
+        
+        <!-- Documentation Modal -->
+        <div id="helpModal" class="modal hide fade" tabindex="-1" role="dialog"
+        aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel">Scan XLSX Form generator documentation</h3>
+            </div>
+            <div class="modal-body">
+            <!--
+                <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
+            -->
                 
             </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
             </div>
-            
-            <div id="errors"></div>
-            
-            <!-- Documentation Modal -->
-            <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog"
-            aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="myModalLabel">Scan XLSX Form generator documentation</h3>
-                </div>
-                <div class="modal-body">
-                    <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                </div>
-            </div>
-
         </div>
+
         <script src="assets/js/jquery.js"></script>
-        <script src="assets/js/jquery.qrcode.min.js"></script>
         
-        <script src="assets/js/bootstrap-modal.js"></script>
+        <script src="assets/js/bootstrap-modal.js" defer></script>
         
         <script src="assets/js/handlebars.js"></script>
-        <script type="text/javascript" src="assets/html2canvas/build/html2canvas.js"></script>
         
-        <script src="assets/js/textile.js"></script>
+        <script src="assets/js/jszip/jszip.js" defer></script>
+        <script src="assets/js/jszip/jszip-load.js" defer></script>
         
-        <!-- JsZip is Doubly included because the xlsx one has trouble generating blobs -->
-        <!-- I modified the source so this one is called MyJsZip -->
-        <script src="assets/js/jszip/jszip.js"></script>
-        <script src="assets/js/jszip/jszip-load.js"></script>
+        <script src="assets/js/underscore.js"></script>
         <script src="XLSXConverter/underscore.js"></script>
-<script src="https://www.webrtc-experiment.com/RecordRTC.js"></script>
+        
+        <script src="//www.webrtc-experiment.com/RecordRTC.js" defer></script>
+        <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+        <link href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet"></link>
 
-<script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-<link href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet">
         <script src="app.js"></script>
-
-
-
-<script id="card-template" type="text/x-handlebars-template">
-    <div class="audio">
-        <button class="btn record">record</button>
-        <button class="btn stop">stop</button>
-        <audio controls="" autoplay="" name="media">
-            {{#if audio}}
-                <source src="{{audio}}" type="audio/wav">
+        <script src="exporters.js" defer></script>
+        
+<script id="deck-template" type="text/x-handlebars-template">
+    {{#each this}}
+        <div class="card-label" id="{{idx}}">
+            {{#if images}}
+                <img src="{{images.[0].dataURL}}"></img>
             {{/if}}
-        </audio>
-    </div>
-    
-    <div class="text">
-        <!-- Two column this? -->
-        <textarea></textarea>
-    </div>
-    
-    <div class="images">
-        <div>
-            {{#each images}}
-                <img src="{{this}}"></img>
-            {{/each}}
+            {{#if text}}
+                {{text}}
+            {{/if}}
+            <button class="btn btn-danger remove">rm</button>
         </div>
-        <label>URL:</label>
-        <input class="url"></input><span style="display:inline-block">
-        <label>Upload files:</label>
-        <input class="uploadfile" type="file" multiple></input></span>
+    {{/each}}
+</script>
+<script id="text-template" type="text/x-handlebars-template">
+    <textarea>{{this}}</textarea>
+</script>
+<script id="audio-template" type="text/x-handlebars-template">
+
+    <button class="btn record">record</button>
+    <button class="btn stop">stop</button>
+    <button class="btn stop">remove</button>
+    <audio controls="" autoplay="" name="media">
+        {{#if this}}
+            <source src="{{this}}" type="audio/wav">
+        {{/if}}
+    </audio>
+
+</script>
+<script id="images-template" type="text/x-handlebars-template">
+    <div>
+        {{#each this}}
+            <img src="{{this.dataURL}}" alt="{{this.name}}"></img>
+            <button>remove</button>
+        {{/each}}
+    </div>
+    <!--
+    <label>URL:</label>
+    <input class="url"></input><span style="display:inline-block">
+    -->
+    <label>Upload images:</label>
+    <input class="uploadfile" type="file" multiple></input></span>
+</script>
+<script id="download-notice" type="text/x-handlebars-template">
+    <div>
+        <a class="btn btn-success download">Download</a>
     </div>
 </script>
-
 
     </body>
 </html>
