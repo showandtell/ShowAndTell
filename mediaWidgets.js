@@ -10,9 +10,8 @@
 //Show and Tell should be a schema name
 
 //Need custom render functions so that some can recycle the current view (e.g. map)
-var mediaWidgets = [
-    {
-        name: 'text',
+var mediaWidgets = {
+    text: {
         init : function(value) {
             $(document).on('change', 'textarea', function(evt) {
             	evt.stopPropagation();
@@ -21,8 +20,8 @@ var mediaWidgets = [
                 value.set($('textarea').val());
             });
         }
-    }, {
-        name: 'image',
+    }, 
+    image : {
         init : function(value) {
             $(document).on('change', '.uploadfile', function(evt) {
                 $("#img-error").empty();
@@ -144,8 +143,8 @@ var mediaWidgets = [
 
         }
         
-    }, {
-        name: 'audio',
+    },
+    audio : {
         init : function(value) {
             $(document).on('click', '.record', function(evt) {
                 
@@ -167,8 +166,8 @@ var mediaWidgets = [
                 }
             });
         }
-    }, {
-        name: 'geopoint',
+    }, 
+    geopoint : {
         init : function(value) {
             
     		var map = new L.map('map', {
@@ -208,4 +207,4 @@ var mediaWidgets = [
         }
         
     }
-];
+};

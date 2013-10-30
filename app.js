@@ -1,7 +1,16 @@
 var _ = window._;
-var Handlebars = window.Handlebars;
-var html2canvas = window.html2canvas;
+var Handlebars, html2canvas, mediaWidgets, XLSXConverter;
 
+var schema = [{
+    name : 'image',
+    type : 'image'
+},{
+    name : 'audio',
+    type : 'audio'
+},{
+    name : 'text',
+    type : 'text'
+}];
 //Make it correspond to a directory stucture so images can be saved to folders.
 var deck = [
     {}
@@ -9,8 +18,8 @@ var deck = [
 var currentCard = deck[0];
 var renderCurrentCard = function(){
     $('.card').empty();
-    _.each(mediaWidgets, function(mediaWidget, idx){
-        $('.output').append($('<div class="widget widget-' + (idx % 3) + ' ' + mediaWidget.name + '">').append(mediaWidget.template(currentCard[mediaWidget.name])));
+    _.each(schema, function(widget, idx){
+        $('.output').append($('<div class="widget widget-' + (idx % 3) + ' ' + widget.type + '">').append(widget.template(currentCard[widget.name])));
     });
 };
 var renderDeck = function(){
@@ -49,14 +58,17 @@ var processXLSX = function(data, filename, callback){
     }
 };
 
+_.each(schema, function(widget){
+    _.extend(widget, mediaWidgets[widget.type]);
+});
 
-_.each(mediaWidgets, function(mediaWidget){
-    var templateString = $("#" + mediaWidget.name + "-template").html();
+_.each(schema, function(widget){
+    var templateString = $("#" + widget.name + "-template").html();
     if(!templateString) {
         console.log("missing template");
         alert("Missing template");
     }
-    mediaWidget.template = Handlebars.compile(templateString);
+    widget.template = Handlebars.compile(templateString);
 
 });
 window.deckTemplate = Handlebars.compile($('#deck-template').html());
@@ -64,13 +76,14 @@ window.deckTemplate = Handlebars.compile($('#deck-template').html());
 renderDeck();
 renderCurrentCard();
 
-_.each(mediaWidgets, function(mediaWidget){
-    if('init' in mediaWidget) mediaWidget.init({
+
+_.each(schema, function(widget){
+    if('init' in widget) widget.init({
         get : function(){
-            return currentCard[mediaWidget.name];
+            return currentCard[widget.name];
         },
         set : function(value){
-            currentCard[mediaWidget.name] = value;
+            currentCard[widget.name] = value;
         }
     });
 });
@@ -78,6 +91,7 @@ _.each(mediaWidgets, function(mediaWidget){
 $( document ).on("click", ".card-label", function( event, ui ) {
     currentCard = deck[parseInt($(event.target).closest(".card-label").prop('id'), 10)];
     renderCurrentCard();
+    $('.deck').addClass("no-show");
 });
 $( document ).on("sortupdate", ".sortable", function( event, ui ) {
     var newDeck = [];

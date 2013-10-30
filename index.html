@@ -3,20 +3,16 @@
   <head>
     <meta charset="utf-8">
     <title>Show &amp; Tell</title>
-    <meta name="viewport" content="width=device-width, initial-scale=.3">
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
 
     <link href="app.css" rel="stylesheet">
   </head>
 
     <body>
-        
-        
-        <nav class="navbar navbar-default" role="navigation">
+
+        <nav class="navbar navbar-inverse" role="navigation">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
             <button type="button" id="my-toggle" class="navbar-toggle toggle-panel" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -31,19 +27,15 @@
         <div class="page">
 
             <div class="deck">
-                <div class="navbar">
-                  <div class="navbar-inner">
-                    <ul class="nav">
-                      <li><a href="#importModal" data-toggle="modal">Import</a></li>
-                      <li><a href="#exportModal" data-toggle="modal">Export</a></li>
-                      <li><a href="#helpModal" data-toggle="modal">Help</a></li>
-                    </ul>
-                  </div>
+                <div style="margin:5px;">
+                    <a class="btn btn-default" href="#importModal" data-toggle="modal">Import</a>
+                    <a class="btn btn-default" href="#exportModal" data-toggle="modal">Export</a>
+                    <a class="btn btn-default" href="#helpModal" data-toggle="modal">Help</a>
                 </div>
-                
                 <div class="well" style="margin:0 5px;">
                 
                     <div class="sortable cards"></div>
+                    <hr>
                     <button class="btn btn-default btn-lg btn-block add-card">Add card</button>
                 </div>
             </div>
@@ -60,59 +52,55 @@
         
         
         </div>
-        
-        <div id="helpModal" class="modal hide fade" tabindex="-1" role="dialog"
-        aria-labelledby="myModalLabel" aria-hidden="true">
+
+
+    <div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">Help</h3>
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Help</h4>
             </div>
             <div class="modal-body">
-            <!--
-                <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
-            -->
-                
+              <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
             </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            </div>
-        </div>
-        <div id="exportModal" class="modal hide fade" tabindex="-1" role="dialog"
-        aria-labelledby="myModalLabel" aria-hidden="true">
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">Export</h3>
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Export</h4>
             </div>
             <div class="modal-body">
-    
+                <p>Download presentation</p>
                 <div id="download"></div>
-                
             </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            </div>
-        </div>
-        <div id="importModal" class="modal hide fade" tabindex="-1" role="dialog"
-        aria-labelledby="myModalLabel" aria-hidden="true">
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+          <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel">Import</h3>
+              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+              <h4 class="modal-title">Help</h4>
             </div>
             <div class="modal-body">
-            <!--
-                <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
-            -->
-                
+              <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
             </div>
-            <div class="modal-footer">
-                <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            </div>
-        </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
 
         <script src="assets/js/jquery.js"></script>
         
-        <script src="assets/js/bootstrap-modal.js" defer></script>
-        
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+
         <script src="assets/js/handlebars.js"></script>
         
         <script src="assets/js/jszip/jszip.js" defer></script>
@@ -143,7 +131,7 @@
     {{#each this}}
         <div class="card-label" id="{{idx}}">
             {{#if image}}
-                <img src="{{image.dataURL}}"></img>
+                <img src="{{image.dataURL}}" style="width:300px;"></img>
             {{/if}}
             {{#if text}}
                 {{text}}
@@ -158,9 +146,9 @@
 </script>
 <script id="audio-template" type="text/x-handlebars-template">
     <h3>audio</h3>
-    <button class="btn record">record</button>
-    <button class="btn stop">stop</button>
-    <button class="btn stop">remove</button>
+    <button class="btn btn-default record">record</button>
+    <button class="btn btn-default stop">stop</button>
+    <hr>
     <div>
     <audio controls="" autoplay="" name="media">
         {{#if this}}
@@ -173,26 +161,29 @@
     <h3>image</h3>
     
     <span style="display:inline-block">
-    <label>Upload image file:</label>
-    <input class="uploadfile" type="file" multiple></input>
-    
-    <label>Download from URL:</label>
-    <input class="url"></input>
+        <label>Upload image file:</label>
+        <input class="uploadfile" type="file" multiple></input>
+        
+        <label>Download from URL:</label>
+        <input class="url"></input>
     </span>
     
+    <hr>
     <div id="img-error"></div>
     
     <div class="image-out">
         {{#if this}}
             <img src="{{dataURL}}" alt="{{name}}"></img>
-            <button>remove</button>
         {{/if}}
     </div>
 </script>
 <script id="geopoint-template" type="text/x-handlebars-template">
     <h3>map image</h3>
-    <div id="map" style="height:500px;"></div>
-    <button class="btn set-location">set location</button>
+    <div id="map" style="height:300px;"></div>
+    <br />
+    <button class="btn btn-default set-location">set location</button>
+    
+    <hr>
     <div id="raster-map">
         {{#if this}}
         <img id="map-img" src="{{dataURL}}" alt="{{name}}"></img>
