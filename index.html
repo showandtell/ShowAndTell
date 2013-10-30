@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=.3">
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
-    <link href="formImage.css" rel="stylesheet">
     <link href="app.css" rel="stylesheet">
   </head>
 
@@ -31,8 +30,10 @@
         </div>
         
         <div class="card-container">
+        <!--
         <a>previous</a>
         <a>next</a>
+        -->
         <div class="output card">
             
         </div>
@@ -98,57 +99,85 @@
         <script src="assets/js/jszip/jszip-load.js" defer></script>
         
         <script src="assets/js/underscore.js"></script>
-        <script src="XLSXConverter/underscore.js"></script>
         
         <script src="//www.webrtc-experiment.com/RecordRTC.js" defer></script>
         <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
         <link href="//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" rel="stylesheet"></link>
 
+        <link href="assets/js/leaflet/leaflet.css" rel="stylesheet"></link>
+        <script src="assets/js/leaflet/leaflet.js"></script>
+        
+        <script src="assets/js/L.GeoSearch/src/js/l.control.geosearch.js"></script>
+        <link rel="stylesheet" href="assets/js/L.GeoSearch/src/css/l.geosearch.css" />
+        
+        <script src="assets/js/L.GeoSearch/src/js/l.geosearch.provider.openstreetmap.js"></script>
+        <script src="assets/js/L.GeoSearch/src/js/l.geosearch.provider.google.js"></script>
+        
+        <script src='assets/js/leaflet-image/leaflet-image.js'></script>
+        
         <script src="mediaWidgets.js" defer></script>
         <script src="app.js"></script>
         <script src="exporters.js" defer></script>
-        
+
 <script id="deck-template" type="text/x-handlebars-template">
     {{#each this}}
         <div class="card-label" id="{{idx}}">
-            {{#if images}}
-                <img src="{{images.[0].dataURL}}"></img>
+            {{#if image}}
+                <img src="{{image.dataURL}}"></img>
             {{/if}}
             {{#if text}}
                 {{text}}
             {{/if}}
-            <button class="btn btn-danger remove">rm</button>
+            <!-- <button class="btn btn-danger remove">rm</button> -->
         </div>
     {{/each}}
 </script>
 <script id="text-template" type="text/x-handlebars-template">
-    <textarea>{{this}}</textarea>
+    <h3>text</h3>
+    <textarea style="width: 500px;height:100px;resize: vertical;">{{this}}</textarea>
 </script>
 <script id="audio-template" type="text/x-handlebars-template">
-
+    <h3>audio</h3>
     <button class="btn record">record</button>
     <button class="btn stop">stop</button>
     <button class="btn stop">remove</button>
+    <div>
     <audio controls="" autoplay="" name="media">
         {{#if this}}
             <source src="{{this}}" type="audio/wav">
         {{/if}}
     </audio>
-
-</script>
-<script id="images-template" type="text/x-handlebars-template">
-    <div>
-        {{#each this}}
-            <img src="{{this.dataURL}}" alt="{{this.name}}"></img>
-            <button>remove</button>
-        {{/each}}
     </div>
-
-    <label>URL:</label>
-    <input class="url"></input><span style="display:inline-block">
-
-    <label>Upload images:</label>
-    <input class="uploadfile" type="file" multiple></input></span>
+</script>
+<script id="image-template" type="text/x-handlebars-template">
+    <h3>image</h3>
+    
+    <span style="display:inline-block">
+    <label>Upload image file:</label>
+    <input class="uploadfile" type="file" multiple></input>
+    
+    <label>Download from URL:</label>
+    <input class="url"></input>
+    </span>
+    
+    <div id="img-error"></div>
+    
+    <div class="image-out">
+        {{#if this}}
+            <img src="{{dataURL}}" alt="{{name}}"></img>
+            <button>remove</button>
+        {{/if}}
+    </div>
+</script>
+<script id="geopoint-template" type="text/x-handlebars-template">
+    <h3>map image</h3>
+    <div id="map" style="height:500px;"></div>
+    <button class="btn set-location">set location</button>
+    <div id="raster-map">
+        {{#if this}}
+        <img id="map-img" src="{{dataURL}}" alt="{{name}}"></img>
+        {{/if}}
+    </div>
 </script>
     </body>
 </html>

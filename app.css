@@ -46,7 +46,6 @@ body {
     float: right;
 }
 .card-container {
-    padding: 2%;
     margin-left: 10px;
     position: absolute;
     top:0;
@@ -58,11 +57,13 @@ body {
     -webkit-box-shadow:  5px 5px 1px 1px rgba(0, 0, 0, .5);
     box-shadow:  5px 5px 1px 1px rgba(0, 0, 0, .5);
     padding: 4px;
+    margin: auto;
+    max-width: 536px;
 }
 
 .card-label {
     background-color: white;
-    border-bottom: 1px solid gray;
+    margin-bottom: 2px;
     overflow: hidden;
     position: relative;
     height: 50px;
@@ -89,8 +90,8 @@ body {
 .widget-2 {
     background-color: #CB89F0;
 }
-.widget > textarea {
-    margin: auto;
+.widget > * {
+    max-width: 500px;
 }
 .deck {
     width: 400px;
@@ -99,7 +100,7 @@ body {
     top: 0;
     bottom: 0;
     left: 0;
-    background: white;
+    background: #F4F4F4;
     overflow-y: scroll;
 }
 .toggle-panel {
@@ -130,3 +131,4 @@ body {
         display: none;
     }
 }
+

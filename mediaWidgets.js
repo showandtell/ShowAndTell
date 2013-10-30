@@ -1,5 +1,15 @@
 //TODO: Backbone views would enable better event binding perhaps
 //also it would enable better rerendering of individual widgets
+
+//The wierd thing is that the model behind the view switches
+
+//Maybe switch to something with databinding in templates... good way to learn
+
+//Maybe images should be singular, but add an array widget that makes a child editor with the given schema. Display LHM style.
+
+//Show and Tell should be a schema name
+
+//Need custom render functions so that some can recycle the current view (e.g. map)
 var mediaWidgets = [
     {
         name: 'text',
@@ -12,28 +22,24 @@ var mediaWidgets = [
             });
         }
     }, {
-        name: 'images',
+        name: 'image',
         init : function(value) {
             $(document).on('change', '.uploadfile', function(evt) {
-            	evt.stopPropagation();
-            	evt.preventDefault();
-                
-                $('#errors').empty();
-                
+                $("#img-error").empty();
             	var files = evt.target.files;
             	_.each(files, function(file){
                 	var reader = new FileReader();
                     reader.onload = function(e) {
-                        value.set((value.get() || []).concat([{
+                        value.set({
                             name: file.name,
                             dataURL: e.target.result
-                        }]));
+                        });
                         renderCurrentCard();
                 	};
                     try {
                         reader.readAsDataURL(file);
                     } catch(e) {
-                        $("#errors").append("<p>Could not read file.</p>");
+                        $("#img-error").append("<p>Could not read file.</p>");
                         throw e;
                     }
             	});
@@ -42,16 +48,16 @@ var mediaWidgets = [
                 $('.uploadfile').val("");
             });
             
-            $(document).on('keypress change blur', '.url', _.debounce(function(evt) {
-            	evt.stopPropagation();
-            	evt.preventDefault();
-                
-                $('#errors').empty();
+            var prevVal;
+            $(document).on('keypress change blur paste', '.url', _.debounce(function(evt) {
+                $('#img-error').empty();
                 var img = $('.url').val();
                 
-                if(!img) return;
+                if(!img || img === prevVal) return;
+                prevVal = img;
                 
                 var match = img.match(/(\/([^.]+\.[^.]+))$/i);
+                //If there is no file ext we assume jpeg
                 var ext = 'jpeg';
                 var name = 'img.' + ext;
                 if(match) {
@@ -115,17 +121,26 @@ var mediaWidgets = [
                 var xhr = new XMLHttpRequest();
                 xhr.open('GET', img, true);
                 xhr.responseType = 'arraybuffer';
-                xhr.onload = function(e) {
-                    value.set((value.get() || []).concat([{
+                xhr.onload = xhr.onerror = function(e) {
+                    if(xhr.status !== 200) {
+                        console.log(xhr);
+                        if(!xhr.statusText) {
+                            $('#img-error').text("Could not load image: It may be hosted on a domain that doesn't allow CORs");
+                        } else {
+                            $('#img-error').text('Could not load image: ' + xhr.statusText);
+                        }
+                        return;
+                    }
+                    value.set({
                         name: name,
                         dataURL: 'data:image/' + ext + ';base64,' + base64ArrayBuffer(e.currentTarget.response)
-                    }]));
+                    });
                     renderCurrentCard();
                 };
+                
                 xhr.send();
             
-                $('.url').val("");
-            }, 500));
+            }, 600));
 
         }
         
@@ -152,5 +167,45 @@ var mediaWidgets = [
                 }
             });
         }
+    }, {
+        name: 'geopoint',
+        init : function(value) {
+            
+    		var map = new L.map('map', {
+    			center: new L.LatLng(53.2, 5.8), zoom: 12
+    		});
+    
+            // add an OpenStreetMap tile layer
+            L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+    
+            new L.Control.GeoSearch({
+                provider: new L.GeoSearch.Provider.OpenStreetMap()
+            }).addTo(map);
+            
+            var lastLocation = {};
+            map.addEventListener('geosearch_showlocation', function(context){
+                lastLocation = context.Location;
+                console.log(lastLocation);
+            });
+            
+            $(document).on('click', '.set-location', _.debounce(function(evt) {
+                $('#raster-map').html("Generating raster map...")
+                leafletImage(map, function(err, canvas) {
+                    var dataURL = canvas.toDataURL();
+                    value.set(_.extend({
+                        query: document.getElementById('leaflet-control-geosearch-qry'),
+                        dataURL: dataURL
+                    }, lastLocation));
+                    var img = document.createElement('img');
+                    img.src = dataURL;
+                    $('#raster-map').empty().append(img);
+                });
+                
+            }, 500));
+
+        }
+        
     }
 ];

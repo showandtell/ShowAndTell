@@ -57,6 +57,13 @@ _.each(mediaWidgets, function(mediaWidget){
         alert("Missing template");
     }
     mediaWidget.template = Handlebars.compile(templateString);
+
+});
+window.deckTemplate = Handlebars.compile($('#deck-template').html());
+
+renderCurrentCard();
+
+_.each(mediaWidgets, function(mediaWidget){
     if('init' in mediaWidget) mediaWidget.init({
         get : function(){
             return currentCard[mediaWidget.name];
@@ -66,9 +73,6 @@ _.each(mediaWidgets, function(mediaWidget){
         }
     });
 });
-window.deckTemplate = Handlebars.compile($('#deck-template').html());
-
-renderCurrentCard();
 
 $( document ).on("click", ".card-label", function( event, ui ) {
     currentCard = deck[parseInt($(event.target).closest(".card-label").prop('id'), 10)];
@@ -84,7 +88,7 @@ $( document ).on("sortupdate", ".sortable", function( event, ui ) {
     renderDeck();
 });
 $(document).on('click', '.add-card', function(evt) {
-                
+
     deck.push({});
     renderDeck();
     
