@@ -46,11 +46,10 @@ body {
     float: right;
 }
 .card-container {
-    margin-left: 10px;
-    position: absolute;
-    top:0;
-    bottom:0;
+    padding-top: 10px;
+    height: 99%;
     overflow-y: scroll;
+    margin-left: 0;
 }
 .card {
     background-color: white;
@@ -63,7 +62,7 @@ body {
 
 .card-label {
     background-color: white;
-    margin-bottom: 2px;
+    margin: 2px auto;
     overflow: hidden;
     position: relative;
     height: 50px;
@@ -93,23 +92,23 @@ body {
 .widget > * {
     max-width: 500px;
 }
-.deck {
-    width: 400px;
+.page {
     position: absolute;
-    z-index: 10;
-    top: 0;
+    top: 53px;
     bottom: 0;
+    width: 100%;
+}
+.deck {
+    position: absolute;
+    width: 400px;
+    z-index: 100;
+    top:0;
+    bottom:0;
     left: 0;
     background: #F4F4F4;
     overflow-y: scroll;
 }
-.toggle-panel {
-    float: right;
-    width: 10px;
-    height: 100%;
-    background-color: lightgray;
-}
-.deck.hidden {
+.deck.no-show {
     left: -390px;
 }
 .modal, .modal.fade.in { 
@@ -124,11 +123,28 @@ body {
     .card-container {
         margin-left: 400px;
     }
-    .deck.hidden {
+    .deck.no-show {
         left: 0;
     }
-    .toggle-panel {
-        display: none;
+    .toggle-panel#my-toggle {
+        visibility:hidden;
     }
 }
 
+#my-toggle {
+    display: inline;
+    position: relative;
+    float: left;
+    padding: 9px 10px;
+    margin-top: 8px;
+    margin-left: 15px;
+    margin-bottom: 8px;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.navbar-header {
+    width: 300px;
+    float: none;
+    margin: auto;
+}

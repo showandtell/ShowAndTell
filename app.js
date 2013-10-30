@@ -61,6 +61,7 @@ _.each(mediaWidgets, function(mediaWidget){
 });
 window.deckTemplate = Handlebars.compile($('#deck-template').html());
 
+renderDeck();
 renderCurrentCard();
 
 _.each(mediaWidgets, function(mediaWidget){
@@ -96,7 +97,7 @@ $(document).on('click', '.add-card', function(evt) {
 
 $(document).on('click', '.toggle-panel', function(evt) {
                 
-    $('.deck').toggleClass("hidden");
+    $('.deck').toggleClass("no-show");
     
 });
 

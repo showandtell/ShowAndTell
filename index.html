@@ -4,42 +4,62 @@
     <meta charset="utf-8">
     <title>Show &amp; Tell</title>
     <meta name="viewport" content="width=device-width, initial-scale=.3">
-    <link href="assets/css/bootstrap.css" rel="stylesheet">
-    <link href="assets/js/google-code-prettify/prettify.css" rel="stylesheet">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
     <link href="app.css" rel="stylesheet">
   </head>
 
     <body>
-    
-        <div class="deck">
-            <div class="toggle-panel"></div>
-            <div class="navbar">
-              <div class="navbar-inner">
-                <a class="brand" href="#">Show &amp; Tell</a>
-                <ul class="nav">
-                  <li><a href="#importModal" data-toggle="modal">Import</a></li>
-                  <li><a href="#exportModal" data-toggle="modal">Export</a></li>
-                  <li><a href="#helpModal" data-toggle="modal">Help</a></li>
-                </ul>
-              </div>
+        
+        
+        <nav class="navbar navbar-default" role="navigation">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" id="my-toggle" class="navbar-toggle toggle-panel" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" style="color:#5590B1;font-family:cursive;">Show &amp; Tell</a>
+          </div>
+        </nav>
+        <div class="page">
+
+            <div class="deck">
+                <div class="navbar">
+                  <div class="navbar-inner">
+                    <ul class="nav">
+                      <li><a href="#importModal" data-toggle="modal">Import</a></li>
+                      <li><a href="#exportModal" data-toggle="modal">Export</a></li>
+                      <li><a href="#helpModal" data-toggle="modal">Help</a></li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="well" style="margin:0 5px;">
+                
+                    <div class="sortable cards"></div>
+                    <button class="btn btn-default btn-lg btn-block add-card">Add card</button>
+                </div>
             </div>
             
-            <div class="sortable cards"></div>
-            <button class="btn add-card">Add card</button>
-            
-        </div>
+            <div class="card-container">
+                <!--
+                <a>previous</a>
+                <a>next</a>
+                -->
+                <div class="output card">
+                    
+                </div>
+            </div>
         
-        <div class="card-container">
-        <!--
-        <a>previous</a>
-        <a>next</a>
-        -->
-        <div class="output card">
-            
-        </div>
-        </div>
         
-        <div id="errors"></div>
+        </div>
         
         <div id="helpModal" class="modal hide fade" tabindex="-1" role="dialog"
         aria-labelledby="myModalLabel" aria-hidden="true">
