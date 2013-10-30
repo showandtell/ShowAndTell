@@ -12,7 +12,7 @@
 
     <body>
 
-        <nav class="navbar navbar-inverse" role="navigation">
+        <nav class="navbar navbar-default" role="navigation">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
             <button type="button" id="my-toggle" class="navbar-toggle toggle-panel" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -27,9 +27,9 @@
         <div class="page">
 
             <div class="deck">
-                <div style="margin:5px;">
+                <div style="margin:12px 5px;">
                     <a class="btn btn-default" href="#importModal" data-toggle="modal">Import</a>
-                    <a class="btn btn-default" href="#exportModal" data-toggle="modal">Export</a>
+                    <a class="btn btn-default export" href="#exportModal" data-toggle="modal">Export</a>
                     <a class="btn btn-default" href="#helpModal" data-toggle="modal">Help</a>
                 </div>
                 <div class="well" style="margin:0 5px;">
@@ -53,47 +53,47 @@
         
         </div>
 
-
-    <div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title">Help</h4>
-            </div>
-            <div class="modal-body">
-              <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
-    <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title">Export</h4>
-            </div>
-            <div class="modal-body">
-                <p>Download presentation</p>
-                <div id="download"></div>
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
-          <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-              <h4 class="modal-title">Help</h4>
-            </div>
-            <div class="modal-body">
-              <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
-            </div>
-          </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-      </div><!-- /.modal -->
+    
+        <div class="modal fade" id="helpModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Help</h4>
+                </div>
+                <div class="modal-body">
+                  <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+        <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Export</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Click here to download your cards as a reveal.js presentation. The presentation is a website you can use anywhere.</p>
+                    <div id="download"></div>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+              <div class="modal fade" id="importModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title">Help</h4>
+                </div>
+                <div class="modal-body">
+                  <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
 
         <script src="assets/js/jquery.js"></script>
         
@@ -105,6 +105,8 @@
         
         <script src="assets/js/jszip/jszip.js" defer></script>
         <script src="assets/js/jszip/jszip-load.js" defer></script>
+        <script src="assets/js/jszip/jszip-inflate.js" defer></script>
+        <script src="assets/js/jszip/jszip-deflate.js" defer></script>
         
         <script src="assets/js/underscore.js"></script>
         

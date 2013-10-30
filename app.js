@@ -21,6 +21,7 @@ var renderCurrentCard = function(){
     _.each(schema, function(widget, idx){
         $('.output').append($('<div class="widget widget-' + (idx % 3) + ' ' + widget.type + '">').append(widget.template(currentCard[widget.name])));
     });
+    renderDeck();
 };
 var renderDeck = function(){
     $('.cards').empty();
@@ -35,28 +36,6 @@ var renderDeck = function(){
 };
 
 $(document).ready(function () {
-
-var processXLSX = function(data, filename, callback){
-    try {
-        var xlsx = XLSX.read(data, {type: 'binary'});
-        var jsonWorkbook = to_json(xlsx);
-        var processedWorkbook = XLSXConverter.processJSONWorkbook(jsonWorkbook);
-        processedWorkbook.filename = filename;
-        
-        renderForm(processedWorkbook, callback);
-        
-        _.each(XLSXConverter.getWarnings(), function(warning){
-            var $warningEl = $("<p>");
-            $warningEl.text(warning);
-            $("#warnings").append($warningEl);
-        });
-    } catch(e) {
-        var $errorEl = $("<p>");
-        $errorEl.text(String(e));
-        $("#errors").append($errorEl);
-        throw e;
-    }
-};
 
 _.each(schema, function(widget){
     _.extend(widget, mediaWidgets[widget.type]);
@@ -73,7 +52,6 @@ _.each(schema, function(widget){
 });
 window.deckTemplate = Handlebars.compile($('#deck-template').html());
 
-renderDeck();
 renderCurrentCard();
 
 
@@ -114,6 +92,46 @@ $(document).on('click', '.toggle-panel', function(evt) {
     $('.deck').toggleClass("no-show");
     
 });
+
+$(document).on('click', '.export', function(evt) {
+    $('#download').text('generating zip...');
+    var zipPromise = $.Deferred();
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'reveal.js.zip', true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = xhr.onerror = function(e) {
+        if(xhr.status !== 200) {
+            console.log(xhr);
+        }
+        zipPromise.resolve(new JSZip(e.currentTarget.response, {base64:false}));
+    };
+    xhr.send()
+    
+    var revealIndexHtml;
+    $.get('assets/revealIndex.html', function(resp){
+        var indexTemplate = Handlebars.compile(resp);
+        revealIndexHtml = indexTemplate(deck);
+        console.log(revealIndexHtml);
+        
+        $.when(zipPromise).then(function(zip){
+            zip.file('reveal.js-2.5.0/index.html', revealIndexHtml);
+            var zipped = zip.generate({
+                type:'blob'
+            });
+            var $downloadBtn = $('<a class="btn btn-success">Download<a>');
+            $downloadBtn.attr('href', window.URL.createObjectURL(zipped));
+            $downloadBtn.attr('download', "presentation.zip");
+            $('#download').empty().append($downloadBtn);
+        });
+    });
+    
+    /*
+    _.each(deck, function(card){
+        $.get('assets/revealIndex.html', function(f){ Handlebars.compile(f)})
+    });
+    */
+});
+
 
 
 });
