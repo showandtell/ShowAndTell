@@ -1,9 +1,7 @@
 Show & Tell
 --------------------------------------------------------------------------------
 Multimedia Card Maker 
-Primary use case is to quickly create voice over slide shows and flash cards
-
-Use slide shows to document how things work, and show how to make cards
+Primary use case is to quickly create voice over slide shows and flash cards.
 
 Features
 --------
