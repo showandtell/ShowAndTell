@@ -33,6 +33,10 @@ I plan to make it so this works well on mobile devices.
 I want to get rid of the bootstrap stuff and many use the topcoat buttons.
 I'm not sure what I'll do for modals.
 
+### TODO:
+
+* Should not use dataURI in the exported presentation, it will be much better to load the images/audio on demand.
+
 ### Testing:
 
 I would appreciate help with this.

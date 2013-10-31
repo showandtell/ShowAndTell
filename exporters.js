@@ -1,5 +1,6 @@
 var JSZip, Handlebars;
 Handlebars.registerHelper("markdown", function(text) {
+    if(!text) return '';
     var converter = new Markdown.Converter();
     return new Handlebars.SafeString(converter.makeHtml(text));
 });

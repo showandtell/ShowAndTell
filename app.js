@@ -67,9 +67,12 @@ _.each(schema, function(widget){
 });
 
 $( document ).on("click", ".card-label", function( event, ui ) {
-    currentCard = deck[parseInt($(event.target).closest(".card-label").prop('id'), 10)];
-    renderCurrentCard();
-    $('.deck').addClass("no-show");
+    $('textarea').blur();
+    window.setTimeout(function(){
+        currentCard = deck[parseInt($(event.target).closest(".card-label").prop('id'), 10)];
+        renderCurrentCard();
+        $('.deck').addClass("no-show");
+    }, 100);
 });
 $( document ).on("sortupdate", ".sortable", function( event, ui ) {
     var newDeck = [];
@@ -99,7 +102,7 @@ $(document).on('click', '.export', function(evt) {
 });
 
 $(document).one('click', '.help', function(evt) {
-    $('.help-body').html('<iframe src="http://lab.hakim.se/reveal-js" seamless="seamless" style="width:100%;height:340px"></iframe>');
+    $('.help-body').html('<iframe src="tutorial/index.html" seamless="seamless" style="width:100%;height:340px"></iframe>');
 });
 
 $(document).on('change', '.uploadzip', function(evt) {
