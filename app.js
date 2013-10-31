@@ -1,5 +1,5 @@
 var _ = window._;
-var Handlebars, html2canvas, mediaWidgets, XLSXConverter;
+var Handlebars, html2canvas, mediaWidgets, XLSXConverter, exporters, importers;
 
 var schema = [{
     name : 'image',
@@ -95,43 +95,31 @@ $(document).on('click', '.toggle-panel', function(evt) {
 
 $(document).on('click', '.export', function(evt) {
     $('#download').text('generating zip...');
-    var zipPromise = $.Deferred();
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'reveal.js.zip', true);
-    xhr.responseType = 'arraybuffer';
-    xhr.onload = xhr.onerror = function(e) {
-        if(xhr.status !== 200) {
-            console.log(xhr);
-        }
-        zipPromise.resolve(new JSZip(e.currentTarget.response, {base64:false}));
-    };
-    xhr.send()
-    
-    var revealIndexHtml;
-    $.get('assets/revealIndex.html', function(resp){
-        var indexTemplate = Handlebars.compile(resp);
-        revealIndexHtml = indexTemplate(deck);
-        console.log(revealIndexHtml);
-        
-        $.when(zipPromise).then(function(zip){
-            zip.file('reveal.js-2.5.0/index.html', revealIndexHtml);
-            var zipped = zip.generate({
-                type:'blob'
-            });
-            var $downloadBtn = $('<a class="btn btn-success">Download<a>');
-            $downloadBtn.attr('href', window.URL.createObjectURL(zipped));
-            $downloadBtn.attr('download', "presentation.zip");
-            $('#download').empty().append($downloadBtn);
-        });
-    });
-    
-    /*
-    _.each(deck, function(card){
-        $.get('assets/revealIndex.html', function(f){ Handlebars.compile(f)})
-    });
-    */
+    exporters.zip(deck);
 });
 
+$(document).one('click', '.help', function(evt) {
+    $('.help-body').html('<iframe src="http://lab.hakim.se/reveal-js" seamless="seamless" style="width:100%;height:340px"></iframe>');
+});
 
+$(document).on('change', '.uploadzip', function(evt) {
+    $('.uploadzip-status').empty();
+	var files = evt.target.files;
+	_.each(files, function(file){
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var zip = new JSZip(e.target.result, {base64:false})
+            deck = JSON.parse(zip.file('reveal.js-2.5.0/deck.json').asText());
+            $('.uploadzip-status').text("Imported!");
+            renderCurrentCard();
+        };
+        reader.readAsArrayBuffer(file);
+	});
+    
+    //Clear the file input so the form can be updated:
+    $('.uploadzip').val("");
+    $('.uploadzip-status').text("importing...");
+    
+});
 
 });

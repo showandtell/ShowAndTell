@@ -15,24 +15,27 @@
         <nav class="navbar navbar-default" role="navigation">
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
+            
+            <a class="navbar-brand" href="#">Show &amp; Tell</a>
+          
             <button type="button" id="my-toggle" class="navbar-toggle toggle-panel" data-toggle="collapse" data-target=".navbar-ex1-collapse">
               <span class="sr-only">Toggle navigation</span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#" style="color:#5590B1;font-family:cursive;">Show &amp; Tell</a>
+            
           </div>
         </nav>
         <div class="page">
 
             <div class="deck">
-                <div style="margin:12px 5px;">
+                <div class="panel-menu">
                     <a class="btn btn-default" href="#importModal" data-toggle="modal">Import</a>
                     <a class="btn btn-default export" href="#exportModal" data-toggle="modal">Export</a>
-                    <a class="btn btn-default" href="#helpModal" data-toggle="modal">Help</a>
+                    <a class="btn btn-default help" href="#helpModal" data-toggle="modal">Help</a>
                 </div>
-                <div class="well" style="margin:0 5px;">
+                <div class="my-well">
                 
                     <div class="sortable cards"></div>
                     <hr>
@@ -61,9 +64,7 @@
                   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                   <h4 class="modal-title">Help</h4>
                 </div>
-                <div class="modal-body">
-                  <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
-                </div>
+                <div class="modal-body help-body"></div>
               </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
           </div><!-- /.modal -->
@@ -86,10 +87,12 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                  <h4 class="modal-title">Help</h4>
+                  <h4 class="modal-title">Import</h4>
                 </div>
                 <div class="modal-body">
-                  <iframe src="http://lab.hakim.se/reveal-js" seamless='seamless' style="width:100%;height:340px"></iframe>
+                    <label>Import deck from zip file:</label>
+                    <input class="uploadzip" type="file"></input>
+                    <p class="uploadzip-status"></p>
                 </div>
               </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -143,24 +146,24 @@
     {{/each}}
 </script>
 <script id="text-template" type="text/x-handlebars-template">
-    <h3>text</h3>
+    <h4 class="widget-head">text</h4>
     <textarea style="width: 500px;height:100px;resize: vertical;">{{this}}</textarea>
 </script>
 <script id="audio-template" type="text/x-handlebars-template">
-    <h3>audio</h3>
+    <h4 class="widget-head">audio</h4>
     <button class="btn btn-default record">record</button>
     <button class="btn btn-default stop">stop</button>
     <hr>
     <div>
     <audio controls="" autoplay="" name="media">
         {{#if this}}
-            <source src="{{this}}" type="audio/wav">
+            <source src="{{dataURL}}" type="audio/wav">
         {{/if}}
     </audio>
     </div>
 </script>
 <script id="image-template" type="text/x-handlebars-template">
-    <h3>image</h3>
+    <h4 class="widget-head">image</h4>
     
     <span style="display:inline-block">
         <label>Upload image file:</label>
@@ -180,7 +183,7 @@
     </div>
 </script>
 <script id="geopoint-template" type="text/x-handlebars-template">
-    <h3>map image</h3>
+    <h4 class="widget-head">map image</h4>
     <div id="map" style="height:300px;"></div>
     <br />
     <button class="btn btn-default set-location">set location</button>

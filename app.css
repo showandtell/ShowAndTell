@@ -46,7 +46,7 @@ body {
     float: right;
 }
 .card-container {
-    padding-top: 10px;
+    padding-top: 1%;
     height: 99%;
     overflow-y: scroll;
     margin-left: 0;
@@ -54,7 +54,6 @@ body {
 .card {
     background-color: white;
     -webkit-box-shadow:  5px 5px 1px 1px rgba(0, 0, 0, .5);
-    box-shadow:  5px 5px 1px 1px rgba(0, 0, 0, .5);
     padding: 4px;
     margin: auto;
     max-width: 600px;
@@ -66,7 +65,7 @@ body {
     overflow: hidden;
     position: relative;
     height: 50px;
-    -webkit-box-shadow: 0px 1px 1px 1px rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, .5);
 }
 .card-label > img {
     opacity: 0.5;
@@ -108,7 +107,7 @@ body {
     left: 0;
     background: #F4F4F4;
     overflow-y: scroll;
-    -webkit-box-shadow:  3px 0px 1px 1px rgba(0, 0, 0, .3);
+    border-right: 1px solid gray;
 }
 .deck.no-show {
     left: -390px;
@@ -150,8 +149,22 @@ body {
 #my-toggle {
     margin-right: 5px;
 }
-.navbar-header {
-    width: 320px;
-    float: right;
-    margin: auto;
+.navbar-brand {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+}
+.widget-head {
+    
+}
+.my-well {
+    min-height: 20px;
+    padding: 19px;
+    background-color: #AAD1F5;
+    margin:0 5px;
+}
+.panel-menu {
+    margin: 4px;
+    padding: 15px 20px;
+    background: #73BAE9;
 }

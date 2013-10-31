@@ -148,21 +148,32 @@ var mediaWidgets = {
         init : function(value) {
             $(document).on('click', '.record', function(evt) {
                 
+                $('.record').addClass('active');
+                
                 navigator.getUserMedia({ audio: true }, onMediaSuccess, onMediaError);
             
                 function onMediaSuccess(stream) {
                     var recordRTC = RecordRTC(stream);
                     recordRTC.startRecording();
                     $(document).one('click', '.stop', function(evt) {
+                        $('.record').removeClass('active');
                         recordRTC.stopRecording(function(audioURL) {
-                           value.set(audioURL);
-                           renderCurrentCard();
+                            recordRTC.getDataURL(function(dataURL){
+                               value.set({
+                                   stopTime : new Date(),
+                                   dataURL : dataURL
+                               });
+                               console.log();
+                               renderCurrentCard();
+                            });
+
                         });
                     });
                 }
             
                 function onMediaError(e) {
                     console.error('media error', e);
+                    $('.record').removeClass('active');
                 }
             });
         }
