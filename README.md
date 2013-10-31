@@ -1,7 +1,8 @@
 Show & Tell
 --------------------------------------------------------------------------------
 Multimedia Card Maker 
-Primary use case is to quickly create voice over slide shows and flash cards.
+The primary use case is to quickly create voice over slide shows.
+I also plan to reuse much of the code to make Anki flashcards.
 
 Features
 --------
@@ -22,7 +23,8 @@ Dev info
 Show & Tell is all client side JavaScript. There is no server component or AJAX
 so you can download and open it from your filesystem.
 
-I plan to make this tool easy to extend with new widgets and configure for other use cases (e.g. creating surveys)
+I plan to make this tool easy to extend with new widgets and configure for other use cases
+(e.g. creating surveys)
 
 Exporters take the deck object array and emit something.
 I want them to also be modular.
@@ -33,5 +35,5 @@ I'm not sure what I'll do for modals.
 
 ### Testing:
 
-I would appreciate help with this
+I would appreciate help with this.
 
