@@ -144,8 +144,10 @@ var mediaWidgets = {
     },
     audio : {
         init : function(value) {
+            var recording = false;
             $(document).on('click', '.record', function(evt) {
-                
+                if(recording) return;
+                recording = true;
                 $('.record').addClass('active');
                 
                 navigator.getUserMedia({ audio: true }, onMediaSuccess, onMediaError);
@@ -164,6 +166,7 @@ var mediaWidgets = {
                                    });
                                    console.log();
                                    renderCurrentCard();
+                                   recording = false;
                                 });
     
                             });
@@ -176,6 +179,7 @@ var mediaWidgets = {
                 function onMediaError(e) {
                     console.error('media error', e);
                     $('.record').removeClass('active');
+                    recording = false;
                 }
             });
         }
