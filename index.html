@@ -12,46 +12,41 @@
 
     <body>
 
-        <nav class="navbar navbar-default" role="navigation">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="navbar-header">
-            
-            <a class="navbar-brand" href="#">Show &amp; Tell</a>
-          
-            <button type="button" id="my-toggle" class="navbar-toggle toggle-panel" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            
-          </div>
+        <nav class="navbar my-navbar" role="navigation">
+            <div class="my-navbar-content">
+                <button type="button" id="my-toggle" class="navbar-toggle toggle-panel">
+                  <span class="sr-only">Toggle navigation</span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <h4 class="app-title">Show &amp; Tell</h4>
+            </div>
         </nav>
-        <div class="page">
 
-            <div class="deck">
-                <div class="panel-menu">
-                    <a class="btn btn-default" href="#importModal" data-toggle="modal">Import</a>
-                    <a class="btn btn-default export" href="#exportModal" data-toggle="modal">Export</a>
-                    <a class="btn btn-default help" href="#helpModal" data-toggle="modal">Help</a>
-                </div>
-                <div class="my-well">
-                
-                    <div class="sortable cards"></div>
-                    <hr>
-                    <button class="btn btn-default btn-lg btn-block add-card">Add card</button>
-                </div>
+        <div class="deck">
+            <div class="panel-menu">
+                <a class="btn import" href="#importModal" data-toggle="modal">Import</a>
+                <a class="btn export" href="#exportModal" data-toggle="modal">Export</a>
+                <a class="btn help" href="#helpModal" data-toggle="modal">Help</a>
             </div>
+            <div class="my-well">
             
-            <div class="card-container">
-                <!--
-                <a>previous</a>
-                <a>next</a>
-                -->
-                <div class="output card">
-                    
-                </div>
+                <div class="sortable cards"></div>
+                <hr>
+                <button class="btn btn-default btn-lg btn-block add-card">Add card</button>
             </div>
+        </div>
+        
+        <div class="card-container">
+            <!--
+            <a>previous</a>
+            <a>next</a>
+            -->
+            <div class="output card">
+                
+            </div>
+        </div>
         
         
         </div>
@@ -112,6 +107,7 @@
         <script src="assets/js/jszip/jszip-deflate.js" defer></script>
         
         <script src="assets/js/underscore.js"></script>
+        <script src="assets/js/Markdown.Converter.js"></script>
         
         <script src="//www.webrtc-experiment.com/RecordRTC.js" defer></script>
         <script src="//code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
@@ -147,7 +143,7 @@
 </script>
 <script id="text-template" type="text/x-handlebars-template">
     <h4 class="widget-head">text</h4>
-    <textarea style="width: 500px;height:100px;resize: vertical;">{{this}}</textarea>
+    <textarea>{{this}}</textarea>
 </script>
 <script id="audio-template" type="text/x-handlebars-template">
     <h4 class="widget-head">audio</h4>

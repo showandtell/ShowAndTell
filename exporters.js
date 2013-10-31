@@ -1,4 +1,8 @@
 var JSZip, Handlebars;
+Handlebars.registerHelper("markdown", function(text) {
+    var converter = new Markdown.Converter();
+    return new Handlebars.SafeString(converter.makeHtml(text));
+});
 var exporters = {
     jsonBlob : function(deck){
         console.log(JSON.stringify(deck));

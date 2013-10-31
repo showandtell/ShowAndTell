@@ -1,22 +1,20 @@
 //TODO: Backbone views would enable better event binding perhaps
 //also it would enable better rerendering of individual widgets
+//Need custom render functions so that some can recycle the current view (e.g. map)
 
 //The wierd thing is that the model behind the view switches
 
-//Maybe switch to something with databinding in templates... good way to learn
+//Maybe switch to something with databinding in templates... good way to learn...
+//But its not that useful when the widgets use so much javascript
 
-//Maybe images should be singular, but add an array widget that makes a child editor with the given schema. Display LHM style.
+//Add an array widget that makes a child editor with the given schema. Display LHM style.
 
 //Show and Tell should be a schema name
 
-//Need custom render functions so that some can recycle the current view (e.g. map)
 var mediaWidgets = {
     text: {
         init : function(value) {
-            $(document).on('change', 'textarea', function(evt) {
-            	evt.stopPropagation();
-            	evt.preventDefault();
-                
+            $(document).on('keypress change blur paste', 'textarea', function(evt) {
                 value.set($('textarea').val());
             });
         }
@@ -153,22 +151,26 @@ var mediaWidgets = {
                 navigator.getUserMedia({ audio: true }, onMediaSuccess, onMediaError);
             
                 function onMediaSuccess(stream) {
-                    var recordRTC = RecordRTC(stream);
-                    recordRTC.startRecording();
-                    $(document).one('click', '.stop', function(evt) {
-                        $('.record').removeClass('active');
-                        recordRTC.stopRecording(function(audioURL) {
-                            recordRTC.getDataURL(function(dataURL){
-                               value.set({
-                                   stopTime : new Date(),
-                                   dataURL : dataURL
-                               });
-                               console.log();
-                               renderCurrentCard();
+                    try {
+                        var recordRTC = new RecordRTC(stream);
+                        recordRTC.startRecording();
+                        $(document).one('click', '.stop', function(evt) {
+                            $('.record').removeClass('active');
+                            recordRTC.stopRecording(function(audioURL) {
+                                recordRTC.getDataURL(function(dataURL){
+                                   value.set({
+                                       stopTime : new Date(),
+                                       dataURL : dataURL
+                                   });
+                                   console.log();
+                                   renderCurrentCard();
+                                });
+    
                             });
-
                         });
-                    });
+                    } catch(e) {
+                        onMediaError(e);
+                    }
                 }
             
                 function onMediaError(e) {

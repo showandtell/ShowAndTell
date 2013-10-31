@@ -7,7 +7,7 @@ Use slide shows to document how things work, and show how to make cards
 
 Features
 --------
-* Add images
+* Add images from files and urls
 * Record voice overs
 * Export to reveal.js slideshows
 
@@ -15,9 +15,6 @@ Planned
 -------
 * Maps
 * Export to anki decks
-
-Adding images by links - I wanted to do this but it requires an image proxy
-For now I'm only targeting Chrome.
 
 Dev info
 --------------------------------------------------------------------------------
@@ -27,11 +24,14 @@ Dev info
 Show & Tell is all client side JavaScript. There is no server component or AJAX
 so you can download and open it from your filesystem.
 
-Its easy to extend S&T with new media widgets, just make a handlebars template,
-create event handlers that modify the current card object when it is interacted with,
-and declare it in the cardConfiguration.js
+I plan to make this tool easy to extend with new widgets and configure for other use cases (e.g. creating surveys)
 
-Exporters take the deck object array and emit something. They are also easy to add.
+Exporters take the deck object array and emit something.
+I want them to also be modular.
+
+I plan to make it so this works well on mobile devices.
+I want to get rid of the bootstrap stuff and many use the topcoat buttons.
+I'm not sure what I'll do for modals.
 
 ### Testing:
 
