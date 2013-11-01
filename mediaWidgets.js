@@ -47,10 +47,12 @@ var mediaWidgets = {
             
             var prevVal;
             $(document).on('keypress change blur paste', '.url', _.debounce(function(evt) {
-                $('#img-error').empty();
                 var img = $('.url').val();
                 
                 if(!img || img === prevVal) return;
+                
+                $('#img-error').empty();
+                
                 prevVal = img;
                 
                 var match = img.match(/(\/([^.]+\.[^.]+))$/i);

@@ -15,6 +15,9 @@ var schema = [{
 var deck = [
     {}
 ];
+
+var deckTemplate;
+
 var currentCard = deck[0];
 var renderCurrentCard = function(){
     $('.card').empty();
@@ -37,6 +40,8 @@ var renderDeck = function(){
 
 $(document).ready(function () {
 
+deckTemplate =  Handlebars.compile($('#deck-template').html());
+
 _.each(schema, function(widget){
     _.extend(widget, mediaWidgets[widget.type]);
 });
@@ -50,7 +55,6 @@ _.each(schema, function(widget){
     widget.template = Handlebars.compile(templateString);
 
 });
-window.deckTemplate = Handlebars.compile($('#deck-template').html());
 
 renderCurrentCard();
 
@@ -84,10 +88,8 @@ $( document ).on("sortupdate", ".sortable", function( event, ui ) {
     renderDeck();
 });
 $(document).on('click', '.add-card', function(evt) {
-
     deck.push({});
     renderDeck();
-    
 });
 
 $(document).on('click', '.toggle-panel', function(evt) {
@@ -124,5 +126,7 @@ $(document).on('change', '.uploadzip', function(evt) {
     $('.uploadzip-status').text("importing...");
     
 });
+
+$('.loading').remove();
 
 });
