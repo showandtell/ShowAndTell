@@ -33,9 +33,10 @@ var renderDeck = function(){
     });
     $('.cards').append(deckTemplate(deck));
     
-    $( ".cards" ).sortable();
-    $( ".cards" ).disableSelection();
-
+    _.defer(function(){
+        $( ".cards" ).sortable();
+        $( ".cards" ).disableSelection();
+    });
 };
 
 $(document).ready(function () {
