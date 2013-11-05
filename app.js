@@ -73,8 +73,12 @@ _.each(schema, function(widget){
 
 $( document ).on("click", ".card-label", function( event, ui ) {
     $('textarea').blur();
+    $('.card').addClass('card-animation');
     window.setTimeout(function(){
         currentCard = deck[parseInt($(event.target).closest(".card-label").prop('id'), 10)];
+		window.setTimeout( function(){
+		    $('.card').removeClass('card-animation');
+		}, 1000 );
         renderCurrentCard();
         $('.deck').addClass("no-show");
     }, 100);
