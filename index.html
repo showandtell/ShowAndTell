@@ -14,12 +14,12 @@
         <div class="loading">Loading...</div>
         <nav class="navbar my-navbar" role="navigation">
             <div class="my-navbar-content">
-                <button type="button" id="my-toggle" class="toggle-panel">
+                <a id="my-toggle" class="btn toggle-panel">
                   <span class="sr-only">Toggle navigation</span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
-                </button>
+                </a>
                 <h4 class="app-title">Show &amp; Tell</h4>
             </div>
         </nav>
@@ -31,7 +31,6 @@
                 <a class="btn help" href="#helpModal" data-toggle="modal">Help</a>
             </div>
             <div class="my-well">
-            
                 <div class="sortable cards"></div>
                 <hr>
                 <button class="btn btn-default btn-lg btn-block add-card">Add card</button>
@@ -109,6 +108,7 @@
         <script src="assets/js/jszip/jszip-deflate.js" defer></script>
         
         <script src="assets/js/underscore.js"></script>
+        <script src="assets/js/backbone-min.js"></script>
         <script src="assets/js/Markdown.Converter.js"></script>
         
         <script src="assets/js/RecordRTC.js"></script>
@@ -133,9 +133,9 @@
 
 <script id="deck-template" type="text/x-handlebars-template">
     {{#each this}}
-        <div class="card-label" id="{{idx}}">
+        <div class="card-label {{#isCurrent}}current{{/isCurrent}}" id="{{idx}}">
             {{#if image}}
-                <img src="{{image.dataURL}}" style="width:300px;"></img>
+                <img src="{{image.dataURL}}"></img>
             {{/if}}
             {{#if text}}
                 {{text}}

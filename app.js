@@ -1,16 +1,21 @@
 var _ = window._;
-var Handlebars, html2canvas, mediaWidgets, XLSXConverter, exporters, importers;
+var Handlebars, Backbone, mediaWidgets, XLSXConverter, exporters, importers;
 
 var schema = [{
     name : 'image',
     type : 'image'
 },{
     name : 'audio',
+    hint : 'This currently only works in Desktop Chrome and the latest Firefox.',
     type : 'audio'
 },{
     name : 'text',
     type : 'text'
+},{
+    name : 'geopoint',
+    type : 'geopoint'
 }];
+var viewSchema;
 //Make it correspond to a directory stucture so images can be saved to folders.
 var deck = [
     {}
@@ -20,16 +25,14 @@ var deckTemplate;
 
 var currentCard = deck[0];
 var renderCurrentCard = function(){
-    $('.card').empty();
-    _.each(schema, function(widget, idx){
-        $('.output').append($('<div class="widget widget-' + (idx % 3) + ' ' + widget.type + '">').append(widget.template(currentCard[widget.name])));
-    });
+    _.invoke(viewSchema, 'render');
     renderDeck();
 };
 var renderDeck = function(){
     $('.cards').empty();
     _.each(deck, function(card, idx){
         card.idx = idx;
+        card.isCurrent = currentCard === card;
     });
     $('.cards').append(deckTemplate(deck));
     
@@ -43,33 +46,37 @@ $(document).ready(function () {
 
 deckTemplate =  Handlebars.compile($('#deck-template').html());
 
-_.each(schema, function(widget){
-    _.extend(widget, mediaWidgets[widget.type]);
-});
-
-_.each(schema, function(widget){
-    var templateString = $("#" + widget.name + "-template").html();
+viewSchema = _.map(schema, function(widget, idx){
+    var templateString = $("#" + widget.type + "-template").html();
     if(!templateString) {
         console.log("missing template");
         alert("Missing template");
     }
-    widget.template = Handlebars.compile(templateString);
-
-});
-
-renderCurrentCard();
-
-
-_.each(schema, function(widget){
-    if('init' in widget) widget.init({
-        get : function(){
-            return currentCard[widget.name];
+    
+    var WidgetView = Backbone.View.extend({
+        template : Handlebars.compile(templateString),
+        render : function(){
+            this.$el.html(this.template(this.value.get()));
+            return this;
         },
-        set : function(value){
-            currentCard[widget.name] = value;
+        value : {
+            get : function(){
+                return currentCard[widget.name];
+            },
+            set : function(value){
+                currentCard[widget.name] = value;
+            }
         }
+    }).extend(mediaWidgets[widget.type]);
+    
+    var $el = $('<div id="' + widget.name + '"></div>');
+    $el.addClass('widget widget-' + (idx % 3) + ' ' + widget.type);
+    $('.output').append($el);
+    return new WidgetView({
+        el: $el
     });
 });
+renderCurrentCard();
 
 $( document ).on("click", ".card-label", function( event, ui ) {
     $('textarea').blur();

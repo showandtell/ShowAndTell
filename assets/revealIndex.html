@@ -28,6 +28,11 @@
 		<!--[if lt IE 9]>
 		<script src="lib/js/html5shiv.js"></script>
 		<![endif]-->
+		<style>
+		img {
+		    max-height: 80%;
+		}
+		</style>
 	</head>
 
 	<body>
@@ -40,7 +45,7 @@
 				<section>
 				    <div>{{markdown text}}</div>
 			        {{#if image}}
-                        <div><img src="{{image.dataURL}}" alt="{{image.name}}"></img></div>
+                    <div><img src="{{image.dataURL}}" alt="{{image.name}}"></img></div>
                     {{/if}}
                     
                     {{#if audio}}
@@ -50,6 +55,10 @@
                     {{/if}}
 				</section>
 				{{/each}}
+				<section>
+				    <p>Created with <a href="http://nathanathan.com/ShowAndTell">Show &amp; Tell</a></p>
+				    <p>Presentation framework: <a href="http://lab.hakim.se/reveal-js/#/">Reveal.js</a></p>
+				</section>
 
 			</div>
 
@@ -83,10 +92,12 @@
 			});
 			
 					
+		    Reveal.addEventListener( 'ready', function( event ) {
+                event.currentSlide.getElementsByTagName('audio')[0].play();
+            });
 		    Reveal.addEventListener( 'slidechanged', function( event ) {
                 event.currentSlide.getElementsByTagName('audio')[0].play();
             });
-
 		</script>
 
 	</body>

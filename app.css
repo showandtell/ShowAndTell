@@ -56,21 +56,25 @@ body {
     margin: auto;
     max-width: 600px;
 }
-
 .card-label {
     background-color: white;
+    padding: 3px;
     margin: 2px auto;
     overflow: hidden;
     position: relative;
     height: 50px;
     -webkit-box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, .5);
+    text-overflow: ellipsis;
+}
+.card-label.current {
+    border-right: 3px solid orange;
 }
 .card-label > img {
-    opacity: 0.5;
+    opacity: 0.4;
     position: absolute;
-    z-index: 0;
+    z-index: -1;
     top: -50px;
-    right: 50px;
+    width: 100%;
 }
 .widget {
     padding: 1em;
@@ -103,7 +107,7 @@ body {
 .deck {
     position: fixed;
     width: 300px;
-    z-index: 1000;
+    z-index: 1002;
     top:0;
     bottom:0;
     left: 0;
@@ -126,6 +130,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     left: -390px;
 }
 .my-navbar {
+    z-index: 1001;
     position: fixed;
     width: 100%;
     border: 0;
@@ -162,11 +167,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     }
 }
 #my-toggle {
-    margin-right: 5px;
-    margin-top: 4px;
+    margin: 5px;
     position: relative;
     float: right;
-    padding: 9px 10px;
+    padding: 7px;
     background-color: transparent;
     border: 1px solid transparent;
 }
