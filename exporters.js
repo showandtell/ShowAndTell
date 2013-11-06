@@ -4,6 +4,9 @@ Handlebars.registerHelper("markdown", function(text) {
     var converter = new Markdown.Converter();
     return new Handlebars.SafeString(converter.makeHtml(text));
 });
+var stripPrefix = function(str){
+    return str.split(',')[1];
+};
 var exporters = {
     jsonBlob : function(deck){
         console.log(JSON.stringify(deck));
@@ -21,14 +24,36 @@ var exporters = {
         };
         xhr.send();
         
-        var revealIndexHtml;
-        $.get('assets/revealIndex.html', function(resp){
-            var indexTemplate = Handlebars.compile(resp);
-            revealIndexHtml = indexTemplate(deck);
+        $.get('assets/revealIndex.html', function(revealIndex){
+            var slideShowTemplate = Handlebars.compile(revealIndex);
+            
+            var csvTemplate = 'text, image, audio, map\n' +
+                "{{#each deck}}" +
+                "{{text}},{{image.path}},audio,map\n" +
+                "{{/each}}";
+            console.log(csvTemplate);
+            csvTemplate = Handlebars.compile(csvTemplate);
+            /*
+            revealIndexHtml = slideShowTemplate({ deck : deck, revealPathPrefix : 'tutorial/' });
+            document.getElementById('preview').contentDocument.write(revealIndexHtml);
+            */
             
             $.when(zipPromise).then(function(zip){
+                var zipPromise2 = $.Deferred();
+                _.each(deck, function(card){
+                    if(!card.image) return;
+                    var path = 'images/' + card.image.name;
+                    zip.file('reveal.js-2.5.0/' + path, stripPrefix(card.image.dataURL), {base64: true});
+                    card.image.path = path;
+                });
+                zipPromise2.resolve(zip);
+                return zipPromise2;
+            }).then(function(zip){
+                var revealIndexHtml = slideShowTemplate({ deck : deck });
                 zip.file('reveal.js-2.5.0/index.html', revealIndexHtml);
+                zip.file('reveal.js-2.5.0/deck.csv', csvTemplate({ deck : deck }));
                 zip.file('reveal.js-2.5.0/deck.json', JSON.stringify(deck));
+
                 var zipped = zip.generate({
                     type:'blob'
                 });
@@ -40,6 +65,6 @@ var exporters = {
         });
     },
     slideShow : function(deck){
-
+        
     }
 };

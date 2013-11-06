@@ -14,8 +14,8 @@
 
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="css/reveal.min.css">
-		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+		<link rel="stylesheet" href="{{revealPathPrefix}}css/reveal.min.css">
+		<link rel="stylesheet" href="{{revealPathPrefix}}css/theme/default.css" id="theme">
 
 		<!-- For syntax highlighting -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -41,11 +41,11 @@
 
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
-			    {{#each this}}
+			    {{#each deck}}
 				<section>
 				    <div>{{markdown text}}</div>
 			        {{#if image}}
-                    <div><img src="{{image.dataURL}}" alt="{{image.name}}"></img></div>
+                    <div><img src="{{image.path}}" alt="{{image.name}}"></img></div>
                     {{/if}}
                     
                     {{#if audio}}
@@ -64,8 +64,8 @@
 
 		</div>
 
-		<script src="lib/js/head.min.js"></script>
-		<script src="js/reveal.min.js"></script>
+		<script src="{{revealPathPrefix}}lib/js/head.min.js"></script>
+		<script src="{{revealPathPrefix}}js/reveal.min.js"></script>
 
 		<script>
 

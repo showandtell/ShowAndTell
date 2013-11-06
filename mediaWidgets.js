@@ -115,11 +115,12 @@ var mediaWidgets = {
                     name: name,
                     dataURL: 'data:image/' + ext + ';base64,' + base64ArrayBuffer(e.currentTarget.response)
                 });
+                that.render();
             };
             xhr.send();
         
         }, 600),
-        uploadfile : function(evt) {
+        uploadfile : function(evt) {console.log('test');
             var that = this;
             this.$("#img-error").empty();
             var files = evt.target.files;
@@ -130,6 +131,7 @@ var mediaWidgets = {
                     name: file.name,
                     dataURL: e.target.result
                 });
+                that.render();
             };
             try {
                 reader.readAsDataURL(file);
@@ -174,6 +176,7 @@ var mediaWidgets = {
                                    stopTime : new Date(),
                                    dataURL : dataURL
                                });
+                               that.render();
                                done();
                             });
                         });
@@ -216,6 +219,18 @@ var mediaWidgets = {
                     that.lastLocation = context.Location;
                     console.log(that.lastLocation);
                 });
+                
+                this.map.on('click', function onMapClick(e) {
+                    that.map.eachLayer(function(l){
+                        if('_latlng' in l) that.map.removeLayer(l);
+                    });
+                    var size = that.map.getBounds().getNorthWest().distanceTo(that.map.getBounds().getSouthEast()) / 20;
+                    L.circle([e.latlng.lat, e.latlng.lng], size, {
+                        fillColor: '#fff',
+                        fillOpacity: 1.0
+                    }).addTo(that.map);
+                });
+                
             } else {
                 var value = this.value.get();
                 var $rasterImgEl = $('#raster-map').empty();
@@ -233,12 +248,10 @@ var mediaWidgets = {
             leafletImage(this.map, function(err, canvas) {
                 var dataURL = canvas.toDataURL();
                 that.value.set(_.extend({
-                    query: document.getElementById('leaflet-control-geosearch-qry'),
+                    query: $('#leaflet-control-geosearch-qry').val(),
                     dataURL: dataURL
                 }, that.lastLocation));
-                var img = document.createElement('img');
-                img.src = dataURL;
-                $('#raster-map').empty().append(img);
+                that.render();
             });
             
         }, 500),

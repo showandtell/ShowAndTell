@@ -67,7 +67,7 @@ body {
     text-overflow: ellipsis;
 }
 .card-label.current {
-    border-right: 3px solid orange;
+    border-left: 20px solid rgb(0, 250, 10);
 }
 .card-label > img {
     opacity: 0.4;
@@ -195,6 +195,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     padding: 19px;
     background-color: #AAD1F5;
     margin:0 5px;
+    -webkit-box-shadow: inset 0px -2px 2px 1px rgba(0, 0, 0, 0.14);
 }
 .panel-menu {
     margin: 4px;

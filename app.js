@@ -47,6 +47,7 @@ $(document).ready(function () {
 deckTemplate =  Handlebars.compile($('#deck-template').html());
 
 viewSchema = _.map(schema, function(widget, idx){
+    var currentView;
     var templateString = $("#" + widget.type + "-template").html();
     if(!templateString) {
         console.log("missing template");
@@ -72,9 +73,10 @@ viewSchema = _.map(schema, function(widget, idx){
     var $el = $('<div id="' + widget.name + '"></div>');
     $el.addClass('widget widget-' + (idx % 3) + ' ' + widget.type);
     $('.output').append($el);
-    return new WidgetView({
+    currentView = new WidgetView({
         el: $el
     });
+    return currentView;
 });
 renderCurrentCard();
 
