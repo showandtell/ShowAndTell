@@ -67,12 +67,11 @@ body {
     text-overflow: ellipsis;
 }
 .card-label.current {
-    border-left: 20px solid rgb(0, 250, 10);
+    opacity: 0.5;
 }
 .card-label > img {
     opacity: 0.4;
     position: absolute;
-    z-index: -1;
     top: -50px;
     width: 100%;
 }
