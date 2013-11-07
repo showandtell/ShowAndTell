@@ -148,8 +148,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     margin: 4px;
     margin-left: 4px;
     height: 42px;
-    background: #73BAE9;
     -webkit-box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, .5);
+}
+.my-navbar-content, .panel-menu {
+    background: #73BAE9;/* #FFD656; */
 }
 @media screen and (min-width:800px) {
     .card-container {
@@ -200,7 +202,6 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', end
     margin: 4px;
     margin-bottom: 8px;
     padding: 5px 20px;
-    background: #73BAE9;
 }
 .panel-menu > .btn {
     color: white;

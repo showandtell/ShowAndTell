@@ -169,10 +169,13 @@ var mediaWidgets = {
                 try {
                     var recordRTC = new RecordRTC(stream);
                     recordRTC.startRecording();
+                    var startTime = new Date();
                     $(document).one('click', '.stop', function(evt) {
                         recordRTC.stopRecording(function(audioURL) {
                             recordRTC.getDataURL(function(dataURL){
                                that.value.set({
+                                   name : 'Recorded ' + startTime.toLocaleString() + '.wav',
+                                   startTime : startTime,
                                    stopTime : new Date(),
                                    dataURL : dataURL
                                });
@@ -199,7 +202,7 @@ var mediaWidgets = {
         render : function() {
             var that = this;
             if(!this.map) {
-                this.$el.html(this.template(this.value.get()));
+                this.basicRender();
 
         		this.map = new L.map('map', {
         			center: new L.LatLng(53.2, 5.8), zoom: 12
@@ -249,7 +252,8 @@ var mediaWidgets = {
                 var dataURL = canvas.toDataURL();
                 that.value.set(_.extend({
                     query: $('#leaflet-control-geosearch-qry').val(),
-                    dataURL: dataURL
+                    dataURL: dataURL,
+                    name : 'map' + Number(new Date()) + 'jpg'
                 }, that.lastLocation));
                 that.render();
             });
@@ -258,6 +262,5 @@ var mediaWidgets = {
         events : {
             'click .set-location' : 'setLocation'
         }
-        
     }
 };

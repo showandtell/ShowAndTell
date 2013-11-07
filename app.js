@@ -1,20 +1,6 @@
 var _ = window._;
-var Handlebars, Backbone, mediaWidgets, XLSXConverter, exporters, importers;
+var schema, Handlebars, Backbone, mediaWidgets, exporters, importers;
 
-var schema = [{
-    name : 'image',
-    type : 'image'
-},{
-    name : 'audio',
-    hint : 'This currently only works in Desktop Chrome and the latest Firefox.',
-    type : 'audio'
-},{
-    name : 'text',
-    type : 'text'
-},{
-    name : 'geopoint',
-    type : 'geopoint'
-}];
 var viewSchema;
 //Make it correspond to a directory stucture so images can be saved to folders.
 var deck = [
@@ -56,9 +42,15 @@ viewSchema = _.map(schema, function(widget, idx){
     
     var WidgetView = Backbone.View.extend({
         template : Handlebars.compile(templateString),
-        render : function(){
-            this.$el.html(this.template(this.value.get()));
+        basicRender : function(){
+            this.$el.html(this.template({
+                name : this.name,
+                value : this.value.get()
+            }));
             return this;
+        },
+        render : function(){
+            return this.basicRender();
         },
         value : {
             get : function(){
@@ -68,7 +60,7 @@ viewSchema = _.map(schema, function(widget, idx){
                 currentCard[widget.name] = value;
             }
         }
-    }).extend(mediaWidgets[widget.type]);
+    }).extend(mediaWidgets[widget.type]).extend(widget);
     
     var $el = $('<div id="' + widget.name + '"></div>');
     $el.addClass('widget widget-' + (idx % 3) + ' ' + widget.type);
@@ -127,8 +119,8 @@ $(document).on('change', '.uploadzip', function(evt) {
 	_.each(files, function(file){
         var reader = new FileReader();
         reader.onload = function(e) {
-            var zip = new JSZip(e.target.result, {base64:false})
-            deck = JSON.parse(zip.file('reveal.js-2.5.0/deck.json').asText());
+            var zip = new JSZip(e.target.result, {base64 : false});
+            deck = JSON.parse(zip.file('deck.json').asText());
             $('.uploadzip-status').text("Imported!");
             renderCurrentCard();
         };
