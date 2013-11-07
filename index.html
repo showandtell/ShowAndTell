@@ -162,24 +162,24 @@ var schema = [{
     {{/each}}
 </script>
 <script id="text-template" type="text/x-handlebars-template">
-    <h4 class="widget-head">text</h4>
-    <textarea>{{this}}</textarea>
+    <h4 class="widget-head">{{name}}</h4>
+    <textarea>{{value}}</textarea>
 </script>
 <script id="audio-template" type="text/x-handlebars-template">
-    <h4 class="widget-head">audio</h4>
+    <h4 class="widget-head">{{name}}</h4>
     <button class="btn btn-default record">record</button>
     <button class="btn btn-default stop">stop</button>
     <hr>
     <div>
     <audio controls="" autoplay="" name="media">
-        {{#if this}}
-            <source src="{{dataURL}}" type="audio/wav">
+        {{#if value}}
+            <source src="{{value.dataURL}}" type="audio/wav">
         {{/if}}
     </audio>
     </div>
 </script>
 <script id="image-template" type="text/x-handlebars-template">
-    <h4 class="widget-head">image</h4>
+    <h4 class="widget-head">{{name}}</h4>
     
     <span style="display:inline-block">
         <label>Upload image file:</label>
@@ -193,21 +193,21 @@ var schema = [{
     <div id="img-error"></div>
     
     <div class="image-out">
-        {{#if this}}
-            <img src="{{dataURL}}" alt="{{name}}"></img>
+        {{#if value}}
+            <img src="{{value.dataURL}}" alt="{{value.name}}"></img>
         {{/if}}
     </div>
 </script>
 <script id="geopoint-template" type="text/x-handlebars-template">
-    <h4 class="widget-head">map image</h4>
+    <h4 class="widget-head">{{name}}</h4>
     <div id="map" style="height:300px;"></div>
     <br />
     <button class="btn btn-default set-location">Save map image</button>
     
     <hr>
     <div id="raster-map">
-        {{#if this}}
-        <img id="map-img" src="{{dataURL}}" alt="{{name}}"></img>
+        {{#if value}}
+        <img id="map-img" src="{{value.dataURL}}" alt="{{name}}"></img>
         {{/if}}
     </div>
 </script>
