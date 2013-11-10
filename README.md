@@ -2,7 +2,7 @@ Show & Tell
 --------------------------------------------------------------------------------
 Multimedia Card Maker 
 The primary use case is to quickly create voice over slide shows.
-I also plan to reuse much of the code to make Anki flashcards.
+I also plan to reuse much of the code to make Anki flashcards (see anki.html).
 
 Features
 --------
@@ -10,9 +10,9 @@ Features
 * Record voice overs
 * Export to reveal.js slideshows
 
-Planned
--------
-* Maps
+Anki Features
+-------------
+* Save slippy maps to images
 * Export to anki decks
 
 Dev info
@@ -28,14 +28,14 @@ I plan to make this tool easy to extend with new widgets and configure for other
 
 Exporters take the deck object array and emit something.
 I want them to also be modular.
+Right now I only have exporters that generate downloadable zips.
+It would be convenient to have one that publishes presentations to github pages.
 
 I plan to make it so this works well on mobile devices.
 I want to get rid of the bootstrap stuff and many use the topcoat buttons.
 I'm not sure what I'll do for modals.
-
-### TODO:
-
-* Should not use dataURI in the exported presentation, it will be much better to load the images/audio on demand.
+[Audio recording doesn't quite work in Android Chrome](http://stackoverflow.com/questions/19731825/webrtc-audio-playback-in-android-chrome),
+but I suspect it will soon.
 
 ### Testing:
 

@@ -174,7 +174,7 @@ var mediaWidgets = {
                         recordRTC.stopRecording(function(audioURL) {
                             recordRTC.getDataURL(function(dataURL){
                                that.value.set({
-                                   name : 'Recorded ' + startTime.toLocaleString() + '.wav',
+                                   name : 'rec' + Number(startTime) + '.wav',
                                    startTime : startTime,
                                    stopTime : new Date(),
                                    dataURL : dataURL
