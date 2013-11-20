@@ -15,6 +15,16 @@ Anki Features
 * Save slippy maps to images
 * Export to anki decks
 
+TODO:
+-----
+* Use build system
+* Publish presentations to gh-pages
+* Make it so microphone requires only one approval
+* Covert wave audio files to something that plays everywhere
+* Export apkg with media files
+* Remove bootstrap and use different modals/buttons (maybe http://leanmodal.finelysliced.com.au/#)
+* Make a presentation about the features
+
 Dev info
 --------------------------------------------------------------------------------
 
