@@ -172,7 +172,7 @@ var mediaWidgets = {
             function onMediaSuccess(stream) {
                 var type = 'wav';
                 try {
-                    var recordRTC = new RecordRTC(stream, { type: 'audio/' + type });
+                    var recordRTC = new RecordRTC(stream); //, { type: 'audio/' + type });
                     recordRTC.startRecording();
                     var startTime = new Date();
                     $(document).one('click', '.stop, .record', function(evt) {

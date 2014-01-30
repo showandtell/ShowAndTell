@@ -25,6 +25,7 @@ TODO:
 * Delete cards, immediate update, selection icon.
 * Make recording icon with 2s delay
 * Add name
+* Is recording possible in windows firefox?
 
 Use build/module system
 * ES6 Modle loader polyfill can compile on the fly, but what if one script won't load?
