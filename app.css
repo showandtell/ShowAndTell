@@ -85,10 +85,16 @@ body {
 }
 .card-label.current:before {
     position: absolute;
-    left: -10px;
+    left: 10px;
     font-size: 26px;
     font-weight: bolder;
     content: "‣";
+}
+.recording:before {
+    font-size: 1.5em;
+    margin-right: 5px;
+    color: red;
+    content: "●";
 }
 .card-label > img {
     opacity: 0.4;

@@ -19,11 +19,9 @@ TODO:
 -----
 * ~~~Export to hosting service (gh-pages?)~~~
 * Covert wave audio files to something that plays everywhere
-* Dynamic cards
 * Make a presentation about the features
 * Condense bootstrap, use different modals? (maybe http://leanmodal.finelysliced.com.au/#)
-* Delete cards, immediate update, selection icon.
-* Make recording icon with 2s delay
+* Delete cards, immediate update of deck, selection icon.
 * Add name
 * Is recording possible in windows firefox?
 

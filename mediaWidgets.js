@@ -166,6 +166,7 @@ var mediaWidgets = {
         
             function done(){
                 $('.record').removeClass('active');
+                $('.recording').hide();
                 that.recording = false;
             }
         
@@ -175,6 +176,10 @@ var mediaWidgets = {
                     var recordRTC = new RecordRTC(stream); //, { type: 'audio/' + type });
                     recordRTC.startRecording();
                     var startTime = new Date();
+                    window.setTimeout(function(){
+                        //On phones the delay before starting is maybe closer to 2 seconds...
+                        $('.recording').show();
+                    }, 1000);
                     $(document).one('click', '.stop, .record', function(evt) {
                         recordRTC.stopRecording(function(audioURL) {
                             console.log(audioURL);
