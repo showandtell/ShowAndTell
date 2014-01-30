@@ -104,7 +104,11 @@ $(document).on('click', '.toggle-panel', function(evt) {
     
 });
 
-$(document).on('click', '.export', function(evt) {
+$(document).on('click', '.export-github', function(evt) {
+    $('#download').text('uploading to github...');
+    exporters.github(deck);
+});
+$(document).on('click', '.export-zip', function(evt) {
     $('#download').text('generating zip...');
     exporters.zip(deck);
 });

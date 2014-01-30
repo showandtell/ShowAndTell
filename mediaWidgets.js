@@ -97,7 +97,6 @@ var mediaWidgets = {
                 ext = name.split('.')[1];
             }
        
-
             var xhr = new XMLHttpRequest();
             xhr.open('GET', img, true);
             xhr.responseType = 'arraybuffer';
@@ -143,11 +142,16 @@ var mediaWidgets = {
             //Clear the file input so the form can be updated:
             this.$('.uploadfile').val("");
         },
+        clear : function(){
+            this.value.set(null);
+            this.render();
+        },
         events : {
             'keypress .url' : 'urlChange',
             'blur .url' : 'urlChange',
             'paste .url' : 'urlChange',
-            'change .uploadfile' : 'uploadfile'
+            'change .uploadfile' : 'uploadfile',
+            'click .clear' : 'clear'
         }
     },
     audio : {
@@ -170,7 +174,7 @@ var mediaWidgets = {
                     var recordRTC = new RecordRTC(stream);
                     recordRTC.startRecording();
                     var startTime = new Date();
-                    $(document).one('click', '.stop', function(evt) {
+                    $(document).one('click', '.stop, .record', function(evt) {
                         recordRTC.stopRecording(function(audioURL) {
                             recordRTC.getDataURL(function(dataURL){
                                that.value.set({
@@ -179,6 +183,7 @@ var mediaWidgets = {
                                    stopTime : new Date(),
                                    dataURL : dataURL
                                });
+                               
                                that.render();
                                done();
                             });
@@ -190,12 +195,17 @@ var mediaWidgets = {
             }
         
             function onMediaError(e) {
-                console.error('media error', e);
+                console.error('media error: ' + JSON.stringify(e));
                 done();
             }
         },
+        clear : function(){
+            this.value.set(null);
+            this.render();
+        },
         events : {
-            'click .record' : 'record'
+            'click .record' : 'record',
+            'click .clear' : 'clear'
         }
     }, 
     geopoint : {

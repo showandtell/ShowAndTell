@@ -13,17 +13,16 @@ Features
 Anki Features
 -------------
 * Save slippy maps to images
-* Export to anki decks
+* Export apkg with media files
 
 TODO:
 -----
-* Use build system
-* Publish presentations to gh-pages
-* Make it so microphone requires only one approval
+* ~~~Export to hosting service (gh-pages?)~~~
 * Covert wave audio files to something that plays everywhere
-* Export apkg with media files
-* Remove bootstrap and use different modals/buttons (maybe http://leanmodal.finelysliced.com.au/#)
+* Dynamic cards
 * Make a presentation about the features
+* Remove bootstrap and use different modals/buttons (maybe http://leanmodal.finelysliced.com.au/#)
+* Use build system (ES6?)
 
 Dev info
 --------------------------------------------------------------------------------
@@ -33,7 +32,7 @@ Dev info
 Show & Tell is all client side JavaScript. There is no server component or AJAX
 so you can download and open it from your filesystem.
 
-I plan to make this tool easy to extend with new widgets and configure for other use cases
+I plan to eventually make this tool easy to extend with new widgets and configure for other use cases
 (e.g. creating surveys)
 
 Exporters take the deck object array and emit something.

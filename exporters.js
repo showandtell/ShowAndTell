@@ -1,4 +1,4 @@
-var JSZip, Handlebars;
+var JSZip, Handlebars, _;
 Handlebars.registerHelper("markdown", function(text) {
     if(!text) return '';
     var converter = new Markdown.Converter();
@@ -11,6 +11,27 @@ Handlebars.registerHelper("get", function(obby, path) {
 var stripPrefix = function(str){
     return str.split(',')[1];
 };
+        
+var getLogin = (function(){
+    var username, password;
+    return function(){
+        return $.Deferred(function(deferredInput){
+            if(!username) {
+                username = prompt("username");
+                password = prompt("password");
+            }
+            if(!username || !password) {
+                deferredInput.reject();
+            } else {
+                deferredInput.resolve({
+                  username: username,
+                  password: password
+                });
+            }
+        });
+    };
+}());
+
 var exporters = {
     jsonBlob : function(deck){
         console.log(JSON.stringify(deck));
@@ -132,7 +153,102 @@ var exporters = {
             });
         });
     },
-    slideShow : function(deck){
+    github : function(deck){
+        var presentationName = "testP";
+        var deferredInput = $.Deferred();
         
+        $.get('assets/revealIndex.html', function(revealIndex){
+            var slideShowTemplate = Handlebars.compile(revealIndex);
+            
+            $.when(getLogin()).done(function(login){
+                var deferredRepo = $.Deferred();
+                var github = new Github({
+                    username: login.username,
+                    password: login.password,
+                    auth: "basic"
+                });
+                var repo = github.getRepo(login.username, "ShowAndTellDocs");
+                repo.show(function(err, info){ 
+                    if(err) {
+                        console.log(err);
+                        github.getRepo("nathanathan", "ShowAndTellDocs").fork(function(err){
+                            var repo = github.getRepo(login.username, "ShowAndTellDocs");
+                            repo.show(function(err, info){ 
+                                if(err) {
+                                    console.log(err);
+                                    alert("Couldn't create repo");
+                                } else {
+                                    deferredRepo.resolve(repo);
+                                }
+                            });
+                        });
+                    } else {
+                        deferredRepo.resolve(repo);
+                    }
+                });
+                $.when(deferredRepo).then(function(repo){
+                    var writer = repo.batchWriter('gh-pages', function(err){
+                      console.log(err);
+                    });
+                    var presDir = 'presentations/' + presentationName + '/';
+                    var showLink = function(){
+                        var $openBtn = $('<a class="btn btn-success">Open<a>');
+                        $openBtn.attr('href', '//' + login.username +
+                            ".github.com/ShowAndTellDocs/presentations/" +
+                            presentationName);
+                        $('#download').empty().append($openBtn);
+                    };
+                    //TODO: Batch this into one commit
+                    $.when.apply(this, _.map(deck, function(card){
+                        var mediaSaved = $.Deferred().resolve();
+                        if(card.image) {
+                            mediaSaved = $.when(mediaSaved, $.Deferred(function(thisDeferred){
+                                card.image.path = card.image.name;
+                                writer.write(presDir + card.image.path,
+                                    {
+                                        content: stripPrefix(card.image.dataURL),
+                                        encoding : 'base64'
+                                    }, function(err, s) {
+                                        if(err) {
+                                            thisDeferred.reject(err);
+                                        } else {
+                                            thisDeferred.resolve();
+                                        }
+                                    });
+                            }));
+                        }
+                        if(card.audio) {
+                            mediaSaved = $.when(mediaSaved, $.Deferred(function(thisDeferred){
+                                card.audio.path = card.audio.name;
+                                writer.write(presDir + card.audio.path,
+                                    {
+                                        content: stripPrefix(card.audio.dataURL),
+                                        encoding : 'base64'
+                                    }, function(err, s) {
+                                        if(err) {
+                                            thisDeferred.reject(err);
+                                        } else {
+                                            thisDeferred.resolve();
+                                        }
+                                    });
+                            }));
+                        }
+                        return mediaSaved;
+                    })).done(function(){
+                        var revealIndexHtml = slideShowTemplate({ deck : deck, revealPathPrefix : '../../' });
+                        writer.write(presDir + 'index.html',
+                            revealIndexHtml, function(err) {
+                                console.log(err);
+                                writer.commit("Commited", function(err){
+                                  console.log(err);
+                                  showLink();
+                                });
+                            });
+                    }).fail(function(err){
+                        console.log(err);
+                    });
+                });
+            });
+        });
     }
 };

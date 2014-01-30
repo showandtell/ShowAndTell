@@ -46,7 +46,11 @@
                 
             </div>
             
-            <div class="links"><a href="https://github.com/nathanathan/ShowAndTell">view source on github</a></div>
+            <div class="links">
+                <a href="https://github.com/nathanathan/ShowAndTell">view source on github</a>
+                <p class="copyright">© <a href="http://nathanathan.com">Nathan Breit</a> 2014</p>
+            </div>
+            
         </div>
         
         
@@ -72,7 +76,13 @@
                   <h4 class="modal-title">Export</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Click here to download your cards as a reveal.js presentation. The presentation is a website you can use anywhere.</p>
+                    <p>Click here to download your cards as a zipped reveal.js presentation. The presentation is a website you can use anywhere.</p>
+                    <a class="export-zip btn btn-success">zip</a>
+                    <p>
+                      Click here to publish your presentation online using githubs page hosting service.
+                      I haven't implemented oauth so you'll need to trust me and the libraries I'm using with your password.
+                    </p>
+                    <a class="export-github btn btn-success">Publish to github</a>
                     <div id="download"></div>
                 </div>
               </div><!-- /.modal-content -->
@@ -144,6 +154,9 @@ var schema = [{
         <script src="mediaWidgets.js"></script>
         <script src="app.js"></script>
         <script src="exporters.js"></script>
+        
+        <script src="assets/js/base64.js"></script>
+        <script src="assets/js/github.js"></script>
 
 <script id="deck-template" type="text/x-handlebars-template">
     {{#each this}}
@@ -159,7 +172,7 @@ var schema = [{
     {{/each}}
 </script>
 <script id="text-template" type="text/x-handlebars-template">
-    <h4 class="widget-head">{{name}}</h4>
+    <h4 class="widget-head">{{name}} <small style="color:black;">(markdown suppported)</small></h4>
     <textarea>{{value}}</textarea>
 </script>
 <script id="audio-template" type="text/x-handlebars-template">
@@ -168,11 +181,12 @@ var schema = [{
     <button class="btn btn-default stop">stop</button>
     <hr>
     <div>
-    <audio controls="" autoplay="" name="media">
-        {{#if value}}
+    {{#if value}}
+        <audio controls="" autoplay="" name="media">
             <source src="{{value.dataURL}}" type="audio/wav">
-        {{/if}}
-    </audio>
+        </audio>
+        <a class="clear btn">clear</a>
+    {{/if}}
     </div>
 </script>
 <script id="image-template" type="text/x-handlebars-template">
@@ -192,19 +206,7 @@ var schema = [{
     <div class="image-out">
         {{#if value}}
             <img src="{{value.dataURL}}" alt="{{value.name}}"></img>
-        {{/if}}
-    </div>
-</script>
-<script id="geopoint-template" type="text/x-handlebars-template">
-    <h4 class="widget-head">{{name}}</h4>
-    <div id="map" style="height:300px;"></div>
-    <br />
-    <button class="btn btn-default set-location">Save map image</button>
-    
-    <hr>
-    <div id="raster-map">
-        {{#if value}}
-        <img id="map-img" src="{{value.dataURL}}" alt="{{name}}"></img>
+            <a class="clear btn">clear</a>
         {{/if}}
     </div>
 </script>

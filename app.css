@@ -40,8 +40,21 @@ body {
     margin-bottom: 1em;
     padding: .5em;
 }
-
-
+.clear {
+    border: 1px solid;
+    color: white;
+    margin: 5px auto;
+    display: block;
+    width: 80px;
+}
+.copyright {
+    margin-top: 1em;
+    color: gray;
+}
+.copyright a {
+    color: gray;
+    text-decoration: underline;
+}
 .help {
     float: right;
 }
@@ -66,8 +79,12 @@ body {
     -webkit-box-shadow: 1px 1px 1px 0px rgba(0, 0, 0, .5);
     text-overflow: ellipsis;
 }
-.card-label.current {
-    opacity: 0.5;
+.card-label.current:before {
+    position: absolute;
+    left: -10px;
+    font-size: 26px;
+    font-weight: bolder;
+    content: "‣";
 }
 .card-label > img {
     opacity: 0.4;
@@ -112,8 +129,7 @@ body {
     left: 0;
     background: #F4F4F4;
     overflow-y: auto;
-    border-right: 1px solid gray;
-    border-left: 1px solid gray;
+    -webkit-box-shadow:  2px 0px 1px 1px rgba(0, 0, 0, .2);
     
 background: rgb(255,255,255); /* Old browsers */
 background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(240,240,240,1) 100%); /* FF3.6+ */
