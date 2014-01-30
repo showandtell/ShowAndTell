@@ -6,6 +6,10 @@ body {
 .modal-body {
 	max-height: none;
 }
+
+.modal-content{
+    border-radius: 0;
+}
 #drop {
     background-color: white;
     border:2px dashed #bbb;

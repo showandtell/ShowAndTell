@@ -170,15 +170,17 @@ var mediaWidgets = {
             }
         
             function onMediaSuccess(stream) {
+                var type = 'ogg';
                 try {
-                    var recordRTC = new RecordRTC(stream);
+                    var recordRTC = new RecordRTC(stream, { type: 'audio/' + type });
                     recordRTC.startRecording();
                     var startTime = new Date();
                     $(document).one('click', '.stop, .record', function(evt) {
                         recordRTC.stopRecording(function(audioURL) {
+                            console.log(audioURL);
                             recordRTC.getDataURL(function(dataURL){
                                that.value.set({
-                                   name : 'rec' + Number(startTime) + '.wav',
+                                   name : 'rec' + Number(startTime) + '.' + type,
                                    startTime : startTime,
                                    stopTime : new Date(),
                                    dataURL : dataURL

@@ -21,8 +21,15 @@ TODO:
 * Covert wave audio files to something that plays everywhere
 * Dynamic cards
 * Make a presentation about the features
-* Remove bootstrap and use different modals/buttons (maybe http://leanmodal.finelysliced.com.au/#)
-* Use build system (ES6?)
+* Condense bootstrap, use different modals? (maybe http://leanmodal.finelysliced.com.au/#)
+* Delete cards, immediate update, selection icon.
+* Make recording icon with 2s delay
+* Add name
+
+Use build/module system
+* ES6 Modle loader polyfill can compile on the fly, but what if one script won't load?
+* So I think a concatenator with a compile step is the best option.
+* If I add a build step I will also try out a css framework.
 
 Dev info
 --------------------------------------------------------------------------------

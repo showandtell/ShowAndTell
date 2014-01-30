@@ -101,6 +101,10 @@ var exporters = {
         });
     },
     zip : function(deck){
+        $('#exportModal').modal('hide');
+        $('#outputModal').modal({show:true});
+        $('#output').text("Creating zip...");
+        
         var zipPromise = $.Deferred();
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'reveal.js.zip', true);
@@ -142,18 +146,21 @@ var exporters = {
                 var revealIndexHtml = slideShowTemplate({ deck : deck });
                 zip.file('reveal.js-2.5.0/index.html', revealIndexHtml);
                 zip.file('deck.json', JSON.stringify(deck));
-
                 var zipped = zip.generate({
                     type:'blob'
                 });
                 var $downloadBtn = $('<a class="btn btn-success">Download<a>');
                 $downloadBtn.attr('href', window.URL.createObjectURL(zipped));
                 $downloadBtn.attr('download', "presentation.zip");
-                $('#download').empty().append($downloadBtn);
+                $('#output').empty().append($downloadBtn);
             });
         });
     },
     github : function(deck){
+        $('#exportModal').modal('hide');
+        $('#outputModal').modal({show:true});
+        $('#output').text("Publishing to github...");
+        
         var presentationName = "testP";
         var deferredInput = $.Deferred();
         
@@ -161,6 +168,14 @@ var exporters = {
             var slideShowTemplate = Handlebars.compile(revealIndex);
             
             $.when(getLogin()).done(function(login){
+                var showLink = function(){
+                    var $openBtn = $('<a class="btn btn-success">Open<a>');
+                    $openBtn.attr('href', '//' + login.username +
+                        ".github.com/ShowAndTellDocs/presentations/" +
+                        presentationName);
+                    $('#output').empty().append($openBtn);
+                };
+                
                 var deferredRepo = $.Deferred();
                 var github = new Github({
                     username: login.username,
@@ -191,13 +206,7 @@ var exporters = {
                       console.log(err);
                     });
                     var presDir = 'presentations/' + presentationName + '/';
-                    var showLink = function(){
-                        var $openBtn = $('<a class="btn btn-success">Open<a>');
-                        $openBtn.attr('href', '//' + login.username +
-                            ".github.com/ShowAndTellDocs/presentations/" +
-                            presentationName);
-                        $('#download').empty().append($openBtn);
-                    };
+
                     //TODO: Batch this into one commit
                     $.when.apply(this, _.map(deck, function(card){
                         var mediaSaved = $.Deferred().resolve();
