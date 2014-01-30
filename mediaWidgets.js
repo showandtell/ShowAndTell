@@ -170,7 +170,7 @@ var mediaWidgets = {
             }
         
             function onMediaSuccess(stream) {
-                var type = 'ogg';
+                var type = 'wav';
                 try {
                     var recordRTC = new RecordRTC(stream, { type: 'audio/' + type });
                     recordRTC.startRecording();
