@@ -12,14 +12,19 @@ Features
 
 TODO:
 -----
+
 * ~~cant click cards on mobile~~
-* bug changing slides during ogg processing
+* ~~bug changing slides during ogg processing~~
 * ~~Delete cards, move cards, immediate update of deck, selection icon.~~
 * ~~Pressing stop before the recording starts~~
-* Single source of data on GH, put the static files in __reveal and call the repo presentations.
-* The forking thing might be a bad idea... being able to pull request theme changes is cool though.
+* Single source of data on GH put the static files in __reveal and call the repo presentations.
+* Creating a single repo with all the presentations might be a bad idea
+** it could make collaboration on individual presentations harder.
+** pull requesting theme changes would be cool though.
+** the important thing is gh-pages hosting, I'm not sure other gh features will be important.
 * import from gh
-* Ability to name presentations
+* Ability name presentation when exporting to gh + commit messages
+* sortable bug where double click to drag causes cloning
 * ~~Covert wave audio files to something that plays everywhere~~
 * Make a presentation about the features
 * Condense bootstrap, use different modals? (maybe http://leanmodal.finelysliced.com.au/#)

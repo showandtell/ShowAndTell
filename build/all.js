@@ -11629,18 +11629,20 @@ var mediaWidgets = {
           $('.recording').show();
           $(document).one('click', '.stop, .record', function(evt) {
             recordRTC.stopRecording();
-            that.value.set({converting: true});
+            var value = {converting: true};
+            that.value.set(value);
+            done();
             that.render();
             convertStreams(recordRTC.getBlob(), function(err, oggblob) {
               blobToDataURL(oggblob, function(err, dataURL) {
-                that.value.set({
+                _.extend(value, {
                   name: 'rec' + Number(startTime) + '.' + type,
                   startTime: startTime,
                   stopTime: new Date(),
-                  dataURL: dataURL
+                  dataURL: dataURL,
+                  converting: false
                 });
-                that.render();
-                done();
+                if (that.value.get() === value) that.render();
               });
             });
           });
