@@ -10,25 +10,20 @@ Features
 * Record voice overs
 * Export to reveal.js slideshows
 
-Anki Features
--------------
-* Save slippy maps to images
-* Export apkg with media files
-
 TODO:
 -----
-* ~~~Export to hosting service (gh-pages?)~~~
-* Covert wave audio files to something that plays everywhere
+* ~~cant click cards on mobile~~
+* bug changing slides during ogg processing
+* ~~Delete cards, move cards, immediate update of deck, selection icon.~~
+* ~~Pressing stop before the recording starts~~
+* Single source of data on GH, put the static files in __reveal and call the repo presentations.
+* The forking thing might be a bad idea... being able to pull request theme changes is cool though.
+* import from gh
+* Ability to name presentations
+* ~~Covert wave audio files to something that plays everywhere~~
 * Make a presentation about the features
 * Condense bootstrap, use different modals? (maybe http://leanmodal.finelysliced.com.au/#)
-* Delete cards, immediate update of deck, selection icon.
-* Add name
 * Is recording possible in windows firefox?
-
-Use build/module system
-* ES6 Modle loader polyfill can compile on the fly, but what if one script won't load?
-* So I think a concatenator with a compile step is the best option.
-* If I add a build step I will also try out a css framework.
 
 Dev info
 --------------------------------------------------------------------------------
@@ -39,18 +34,17 @@ Show & Tell is all client side JavaScript. There is no server component or AJAX
 so you can download and open it from your filesystem.
 
 I plan to eventually make this tool easy to extend with new widgets and configure for other use cases
-(e.g. creating surveys)
+(e.g. creating falsh card decks or surveys)
 
 Exporters take the deck object array and emit something.
 I want them to also be modular.
-Right now I only have exporters that generate downloadable zips.
-It would be convenient to have one that publishes presentations to github pages.
 
 I plan to make it so this works well on mobile devices.
-I want to get rid of the bootstrap stuff and many use the topcoat buttons.
-I'm not sure what I'll do for modals.
-[Audio recording doesn't quite work in Android Chrome](http://stackoverflow.com/questions/19731825/webrtc-audio-playback-in-android-chrome),
-but I suspect it will soon.
+
+[There are issues with WAV playback in Android Chrome](http://stackoverflow.com/questions/19731825/webrtc-audio-playback-in-android-chrome),
+and WAV files are huge, so I right now I convert to ogg by downloading a 18 meg
+compiled to js version of ffmpeg as shown by Mauz Khan:
+https://github.com/muaz-khan/WebRTC-Experiment/tree/master/ffmpeg
 
 ### Testing:
 

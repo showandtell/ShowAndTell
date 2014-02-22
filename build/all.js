@@ -8038,6 +8038,189 @@ LZWEncoder = function() {
   };
   return t;
 };
+!function(a) {
+  "use strict";
+  "function" == typeof define && define.amd ? define(a): "undefined" != typeof module && "undefined" != typeof module.exports ? module.exports = a(): window.Sortable = a();
+}(function() {
+  "use strict";
+  function a(a, c) {
+    this.el = a, this.options = c = c || {}, c.group = c.group || Math.random(), c.handle = c.handle || null, c.draggable = c.draggable || a.children[0] && a.children[0].nodeName || "li", c.ghostClass = c.ghostClass || "sortable-ghost", c.onAdd = b(this, c.onAdd || A), c.onUpdate = b(this, c.onUpdate || A), c.onRemove = b(this, c.onRemove || A), a[u] = c.group;
+    for (var d in this)"_" === d.charAt(0) && (this[d] = b(this, this[d]));
+    e(a, "add", c.onAdd), e(a, "update", c.onUpdate), e(a, "remove", c.onRemove), e(a, "mousedown", this._onTapStart), e(a, "touchstart", this._onTapStart), e(a, "selectstart", this._onTapStart), e(a, "dragover", this._onDragOver), e(a, "dragenter", this._onDragOver), C.push(this._onDragOver);
+  }
+  function b(a, b) {
+    var c = B.call(arguments, 2);
+    return b.bind ? b.bind.apply(b, [a].concat(c)): function() {
+      return b.apply(a, c.concat(B.call(arguments)));
+    };
+  }
+  function c(a, b, c) {
+    if (a) {
+      c = c || w, b = b.split(".");
+      var d = b.shift().toUpperCase(), e = new RegExp("\\s(" + b.join("|") + ")\\s", "g");
+      do if (!("" !== d && a.nodeName != d || b.length && ((" " + a.className + " ").match(e) || []).length != b.length)) return a; while (a !== c && (a = a.parentNode));
+    }
+    return null;
+  }
+  function d(a) {
+    a.dataTransfer.dropEffect = "move", a.preventDefault();
+  }
+  function e(a, b, c) {
+    a.addEventListener(b, c, !1);
+  }
+  function f(a, b, c) {
+    a.removeEventListener(b, c, !1);
+  }
+  function g(a, b, c) {
+    if (a) if (a.classList) a.classList[c ? "add": "remove"](b); else {
+      var d = (" " + a.className + " ").replace(/\s+/g, " ").replace(" " + b + " ", "");
+      a.className = d + (c ? " " + b: "");
+    }
+  }
+  function h(a, b, c) {
+    if (a && a.style) {
+      if (void 0 === c) return w.defaultView && w.defaultView.getComputedStyle ? c = w.defaultView.getComputedStyle(a, ""): a.currentStyle && (c = a.currentStyle), void 0 === b ? c: c[b];
+      a.style[b] = c + ("string" == typeof c ? "": "px");
+    }
+  }
+  function i(a, b, c) {
+    if (a) {
+      var d = a.getElementsByTagName(b), e = 0, f = d.length;
+      if (c) for (; f > e; e++) c(d[e], e);
+      return d;
+    }
+    return [];
+  }
+  function j(a) {
+    return a.draggable = !1;
+  }
+  function k() {
+    y = !1;
+  }
+  var l, m, n, o, p, q, r, s, t, u = "Sortable" + (new Date).getTime(), v = window, w = v.document, x = v.parseInt, y = !1, z = function(a, b) {
+    var c = w.createEvent("Event");
+    return c.initEvent(a, !0, !0), c.item = b, c;
+  }, A = function() {}, B = [].slice, C = [];
+  return a.prototype = {
+    constructor: a,
+    _applyEffects: function() {
+      g(l, this.options.ghostClass, !0);
+    },
+    _onTapStart: function(a) {
+      var b = a.touches && a.touches[0], f = (b || a).target, g = this.options, h = this.el;
+      if (g.handle && (f = c(f, g.handle, h)), f = c(f, g.draggable, h), f && "selectstart" == a.type && "A" != f.tagName && "IMG" != f.tagName && f.dragDrop(), f && !l && f.parentNode === h) {
+        s = a, f.draggable = !0, i(f, "a", j), i(f, "img", j), b && (s = {
+          target: f,
+          clientX: b.clientX,
+          clientY: b.clientY
+        }, this._onDragStart(s, !0), a.preventDefault()), e(this.el, "dragstart", this._onDragStart), e(this.el, "dragend", this._onDrop), e(w, "dragover", d);
+        try {
+          w.selection ? w.selection.empty(): window.getSelection().removeAllRanges();
+        } catch (k) {}
+      }
+    },
+    _emulateDragOver: function() {
+      if (t) {
+        h(m, "display", "none");
+        var a = w.elementFromPoint(t.clientX, t.clientY), b = a, c = this.options.group, d = C.length;
+        do {
+          if (b[u] === c) {
+            for (; d--;) C[d]({
+              clientX: t.clientX,
+              clientY: t.clientY,
+              target: a,
+              rootEl: b
+            });
+            break;
+          }
+          a = b;
+        } while (b = b.parentNode);
+        h(m, "display", "");
+      }
+    },
+    _onTouchMove: function(a) {
+      if (s) {
+        var b = a.touches[0], c = b.clientX - s.clientX, d = b.clientY - s.clientY;
+        t = b, h(m, "webkitTransform", "translate3d(" + c + "px," + d + "px,0)");
+      }
+    },
+    _onDragStart: function(a, b) {
+      var c = a.target, d = a.dataTransfer;
+      if (n = this.el, l = c, o = c.nextSibling, r = this.options.group, b) {
+        var f, g = c.getBoundingClientRect(), i = h(c);
+        m = c.cloneNode(!0), h(m, "top", g.top - x(i.marginTop, 10)), h(m, "left", g.left - x(i.marginLeft, 10)), h(m, "width", g.width), h(m, "height", g.height), h(m, "opacity", "0.8"), h(m, "position", "fixed"), h(m, "zIndex", "100000"), n.appendChild(m), f = m.getBoundingClientRect(), h(m, "width", 2 * g.width - f.width), h(m, "height", 2 * g.height - f.height), e(w, "touchmove", this._onTouchMove), e(w, "touchend", this._onDrop), this._loopId = setInterval(this._emulateDragOver, 150);
+      } else d.effectAllowed = "move", d.setData("Text", c.textContent), e(w, "drop", this._onDrop);
+      setTimeout(this._applyEffects);
+    },
+    _onDragOver: function(a) {
+      if (!y && r === this.options.group && (void 0 === a.rootEl || a.rootEl === this.el)) {
+        var b = this.el, d = c(a.target, this.options.draggable, b);
+        if (0 === b.children.length || b.children[0] === m) b.appendChild(l); else if (d && d !== l && void 0 !== d.parentNode[u]) {
+          p !== d && (p = d, q = h(d));
+          var e, f = d.getBoundingClientRect(), g = f.right - f.left, i = f.bottom - f.top, j = /left|right|inline/.test(q.cssFloat + q.display), n = (j ? (a.clientX - f.left) / g: (a.clientY - f.top) / i) > .5, o = d.offsetWidth > l.offsetWidth, s = d.offsetHeight > l.offsetHeight, t = d.nextSibling;
+          y = !0, setTimeout(k, 30), e = j ? d.previousElementSibling === l && !o || n > .5 && o: d.nextElementSibling !== l && !s || n > .5 && s, e && !t ? b.appendChild(l): d.parentNode.insertBefore(l, e ? t: d);
+        }
+      }
+    },
+    _onDrop: function(a) {
+      clearInterval(this._loopId), f(w, "drop", this._onDrop), f(w, "dragover", d), f(this.el, "dragend", this._onDrop), f(this.el, "dragstart", this._onDragStart), f(this.el, "selectstart", this._onTapStart), f(w, "touchmove", this._onTouchMove), f(w, "touchend", this._onDrop), a && (a.preventDefault(), a.stopPropagation(), m && m.parentNode.removeChild(m), l && (g(l, this.options.ghostClass, !1), n.contains(l) ? l.nextSibling !== o && l.dispatchEvent(z("update", l)): (n.dispatchEvent(z("remove", l)), l.dispatchEvent(z("add", l)))), n = l = m = o = s = t = p = q = r = null);
+    },
+    destroy: function() {
+      var a = this.el, b = this.options;
+      f(a, "add", b.onAdd), f(a, "update", b.onUpdate), f(a, "remove", b.onRemove), f(a, "mousedown", this._onTapStart), f(a, "touchstart", this._onTapStart), f(a, "selectstart", this._onTapStart), f(a, "dragover", this._onDragOver), f(a, "dragenter", this._onDragOver), Array.prototype.forEach.call(a.querySelectorAll("[draggable]"), function(a) {
+        a.removeAttribute("draggable");
+      }), C.splice(C.indexOf(this._onDragOver), 1), this._onDrop(), this.el = null;
+    }
+  }, a.utils = {
+    on: e,
+    off: f,
+    css: h,
+    find: i,
+    bind: b,
+    closest: c,
+    toggleClass: g
+  }, a.version = "0.1.6", a;
+});
+var base64ArrayBuffer = (function(chars) {
+  "use strict";
+  var base64ArrayBuffer = {};
+  base64ArrayBuffer.encode = function(arraybuffer) {
+    var bytes = new Uint8Array(arraybuffer), i, len = bytes.length, base64 = "";
+    for (i = 0; i < len; i += 3) {
+      base64 += chars[bytes[i] >> 2];
+      base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+      base64 += chars[bytes[i + 2] & 63];
+    }
+    if ((len % 3) === 2) {
+      base64 = base64.substring(0, base64.length - 1) + "=";
+    } else if (len % 3 === 1) {
+      base64 = base64.substring(0, base64.length - 2) + "==";
+    }
+    return base64;
+  };
+  base64ArrayBuffer.decode = function(base64) {
+    var bufferLength = base64.length * 0.75, len = base64.length, i, p = 0, encoded1, encoded2, encoded3, encoded4;
+    if (base64[base64.length - 1] === "=") {
+      bufferLength--;
+      if (base64[base64.length - 2] === "=") {
+        bufferLength--;
+      }
+    }
+    var arraybuffer = new ArrayBuffer(bufferLength), bytes = new Uint8Array(arraybuffer);
+    for (i = 0; i < len; i += 4) {
+      encoded1 = chars.indexOf(base64[i]);
+      encoded2 = chars.indexOf(base64[i + 1]);
+      encoded3 = chars.indexOf(base64[i + 2]);
+      encoded4 = chars.indexOf(base64[i + 3]);
+      bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+      bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+      bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+    }
+    return arraybuffer;
+  };
+  return base64ArrayBuffer;
+})("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 var Base64 = (function() {
   var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   var obj = {
@@ -10973,30 +11156,52 @@ Handlebars.VM = {
 };
 Handlebars.template = Handlebars.VM.template;
 ;
-var _ = window._;
-var schema, Handlebars, Backbone, mediaWidgets, exporters, importers;
+var _, schema, Handlebars, Backbone, mediaWidgets, exporters;
 var viewSchema;
 var deck = [{}];
-var deckTemplate;
 var currentCard = deck[0];
-var renderCurrentCard = function() {
-  _.invoke(viewSchema, 'render');
-  renderDeck();
-};
-var renderDeck = function() {
-  $('.cards').empty();
-  _.each(deck, function(card, idx) {
-    card.idx = idx;
-    card.isCurrent = currentCard === card;
-  });
-  $('.cards').append(deckTemplate(deck));
-  _.defer(function() {
-    $(".cards").sortable();
-    $(".cards").disableSelection();
-  });
-};
 $(document).ready(function() {
-  deckTemplate = Handlebars.compile($('#deck-template').html());
+  var cardStubTemplate = Handlebars.compile($('#card-stub-template').html());
+  var renderCurrentCard = function() {
+    _.invoke(viewSchema, 'render');
+    renderDeck();
+  };
+  var renderDeck = function() {
+    _.each(deck, function(card, idx) {
+      card.idx = idx;
+      card.isCurrent = (currentCard === card);
+    });
+    $('.cards').html(deck.map(cardStubTemplate).join(''));
+    _.defer(function() {
+      if (window.deckSortable) return;
+      var $container = $(".sortable");
+      window.deckSortable = new Sortable($container.get(0), {
+        draggable: ".card-label",
+        ghostClass: "invisible",
+        handle: ".label-handle",
+        onUpdate: function(evt) {
+          var newDeck = [];
+          $container.children().each(function(idx, el) {
+            console.log(el);
+            var parsedNidx = parseInt(el.id, 10);
+            newDeck[idx] = deck[parsedNidx];
+          });
+          deck = newDeck;
+          renderDeck();
+        }
+      });
+    });
+  };
+  if ("localStorage"in window) {
+    if (localStorage.getItem("downloadWavConverter") === "true") {
+      window.wavConverterLoading = true;
+      worker = createWebWorker();
+      worker.onready = function(event) {
+        window.wavConverterLoaded = true;
+        renderCurrentCard();
+      };
+    }
+  }
   viewSchema = _.map(schema, function(widget, idx) {
     var currentView;
     var templateString = $("#" + widget.type + "-template").html();
@@ -11009,7 +11214,9 @@ $(document).ready(function() {
       basicRender: function() {
         this.$el.html(this.template({
           name: this.name,
-          value: this.value.get()
+          value: this.value.get(),
+          wavConverterLoading: window.wavConverterLoading,
+          wavConverterLoaded: window.wavConverterLoaded
         }));
         return this;
       },
@@ -11022,6 +11229,9 @@ $(document).ready(function() {
         },
         set: function(value) {
           currentCard[widget.name] = value;
+          if (widget.name === 'text') {
+            renderDeck();
+          }
         }
       }
     }).extend(mediaWidgets[widget.type]).extend(widget);
@@ -11044,18 +11254,17 @@ $(document).ready(function() {
       $('.deck').addClass("no-show");
     }, 100);
   });
-  $(document).on("sortupdate", ".sortable", function(event, ui) {
-    var newDeck = [];
-    _.each($(".sortable").sortable("toArray"), function(nidx, idx) {
-      var parsedNidx = parseInt(nidx, 10);
-      newDeck[idx] = deck[parsedNidx];
-    });
-    deck = newDeck;
-    renderDeck();
-  });
   $(document).on('click', '.add-card', function(evt) {
     deck.push({});
     renderDeck();
+  });
+  $(document).on('click', '.rm-card', function(evt) {
+    var currentCardIdx = currentCard.idx;
+    deck.splice(currentCardIdx, 1);
+    currentCard = deck[(currentCardIdx % deck.length)];
+    console.log(currentCard, deck, currentCardIdx);
+    renderDeck();
+    renderCurrentCard();
   });
   $(document).on('click', '.toggle-panel', function(evt) {
     $('.deck').toggleClass("no-show");
@@ -11221,9 +11430,9 @@ var exporters = {
       var slideShowTemplate = Handlebars.compile(revealIndex);
       $.when(getLogin()).done(function(login) {
         var showLink = function() {
-          var $openBtn = $('<a class="btn btn-success">Open<a>');
-          $openBtn.attr('href', '//' + login.username + ".github.com/ShowAndTellDocs/presentations/" + presentationName);
-          $('#output').empty().append($openBtn);
+          var $openBtn = $('<a class="btn btn-success">Open Presentation<a>');
+          $openBtn.attr('href', 'http://' + login.username + ".github.com/ShowAndTellDocs/presentations/" + presentationName).attr("target", "_blank");
+          $('#output').empty().append("<p>It may take a few minutes before your presentation is updated on github.</p>").append($openBtn);
         };
         var deferredRepo = $.Deferred();
         var github = new Github({
@@ -11308,47 +11517,25 @@ var exporters = {
     });
   }
 };
-var _, RecordRTC;
-function base64ArrayBuffer(arrayBuffer) {
-  var base64 = '';
-  var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-  var bytes = new Uint8Array(arrayBuffer);
-  var byteLength = bytes.byteLength;
-  var byteRemainder = byteLength % 3;
-  var mainLength = byteLength - byteRemainder;
-  var a, b, c, d;
-  var chunk;
-  for (var i = 0; i < mainLength; i = i + 3) {
-    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
-    a = (chunk & 16515072) >> 18;
-    b = (chunk & 258048) >> 12;
-    c = (chunk & 4032) >> 6;
-    d = chunk & 63;
-    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d];
-  }
-  if (byteRemainder == 1) {
-    chunk = bytes[mainLength];
-    a = (chunk & 252) >> 2;
-    b = (chunk & 3) << 4;
-    base64 += encodings[a] + encodings[b] + '==';
-  } else if (byteRemainder == 2) {
-    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1];
-    a = (chunk & 64512) >> 10;
-    b = (chunk & 1008) >> 4;
-    c = (chunk & 15) << 2;
-    base64 += encodings[a] + encodings[b] + encodings[c] + '=';
-  }
-  return base64;
-}
+var _, RecordRTC, base64ArrayBuffer;
+var blobToDataURL = function(blob, callback) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    callback(null, e.target.result);
+  };
+  reader.onerror = callback;
+  reader.readAsDataURL(blob);
+};
 var mediaWidgets = {
   text: {
-    updateValue: function() {
+    updateValue: _.debounce(function() {
       this.value.set(this.$('textarea').val());
-    },
+    }, 400),
     events: {
       'keypress textarea': 'updateValue',
       'blur textarea': 'updateValue',
-      'paste textarea': 'updateValue'
+      'paste textarea': 'updateValue',
+      'cut textarea': 'updateValue'
     }
   },
   image: {
@@ -11380,7 +11567,7 @@ var mediaWidgets = {
         }
         that.value.set({
           name: name,
-          dataURL: 'data:image/' + ext + ';base64,' + base64ArrayBuffer(e.currentTarget.response)
+          dataURL: 'data:image/' + ext + ';base64,' + base64ArrayBuffer.decode(e.currentTarget.response)
         });
         that.render();
       };
@@ -11434,18 +11621,18 @@ var mediaWidgets = {
         that.recording = false;
       }
       function onMediaSuccess(stream) {
-        var type = 'wav';
+        var type = 'webm';
         try {
           var recordRTC = new RecordRTC(stream);
           recordRTC.startRecording();
           var startTime = new Date();
-          window.setTimeout(function() {
-            $('.recording').show();
-          }, 1000);
+          $('.recording').show();
           $(document).one('click', '.stop, .record', function(evt) {
-            recordRTC.stopRecording(function(audioURL) {
-              console.log(audioURL);
-              recordRTC.getDataURL(function(dataURL) {
+            recordRTC.stopRecording();
+            that.value.set({converting: true});
+            that.render();
+            convertStreams(recordRTC.getBlob(), function(err, oggblob) {
+              blobToDataURL(oggblob, function(err, dataURL) {
                 that.value.set({
                   name: 'rec' + Number(startTime) + '.' + type,
                   startTime: startTime,
@@ -11470,64 +11657,78 @@ var mediaWidgets = {
       this.value.set(null);
       this.render();
     },
+    enable: function() {
+      var that = this;
+      localStorage.setItem("downloadWavConverter", $('#rememberWavConverter').prop('checked'));
+      window.wavConverterLoading = true;
+      this.render();
+      worker = createWebWorker();
+      worker.onready = function(event) {
+        window.wavConverterLoaded = true;
+        that.render();
+      };
+    },
     events: {
       'click .record': 'record',
-      'click .clear': 'clear'
+      'click .clear': 'clear',
+      'click .enable-audio': 'enable'
     }
-  },
-  geopoint: {
-    render: function() {
-      var that = this;
-      if (!this.map) {
-        this.basicRender();
-        this.map = new L.map('map', {
-          center: new L.LatLng(53.2, 5.8),
-          zoom: 12
-        });
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'}).addTo(this.map);
-        new L.Control.GeoSearch({provider: new L.GeoSearch.Provider.OpenStreetMap()}).addTo(this.map);
-        this.lastLocation = {};
-        this.map.addEventListener('geosearch_showlocation', function(context) {
-          that.lastLocation = context.Location;
-          console.log(that.lastLocation);
-        });
-        this.map.on('click', function onMapClick(e) {
-          that.map.eachLayer(function(l) {
-            if ('_latlng'in l) that.map.removeLayer(l);
-          });
-          var size = that.map.getBounds().getNorthWest().distanceTo(that.map.getBounds().getSouthEast()) / 20;
-          L.circle([e.latlng.lat, e.latlng.lng], size, {
-            fillColor: '#fff',
-            fillOpacity: 1.0
-          }).addTo(that.map);
-        });
-      } else {
-        var value = this.value.get();
-        var $rasterImgEl = $('#raster-map').empty();
-        if (value && 'dataURL'in value) {
-          var img = document.createElement('img');
-          img.src = value.dataURL;
-          $rasterImgEl.append(img);
-        }
-      }
-      return this;
-    },
-    setLocation: _.debounce(function(evt) {
-      var that = this;
-      this.$('#raster-map').html("Generating raster map...");
-      leafletImage(this.map, function(err, canvas) {
-        var dataURL = canvas.toDataURL();
-        that.value.set(_.extend({
-          query: $('#leaflet-control-geosearch-qry').val(),
-          dataURL: dataURL,
-          name: 'map' + Number(new Date()) + 'jpg'
-        }, that.lastLocation));
-        that.render();
-      });
-    }, 500),
-    events: {'click .set-location': 'setLocation'}
   }
 };
+function createWebWorker() {
+  var workerPath = 'https://googledrive.com/host/0B6GWd_dUUTT8OEtLRGdQb2pibDg/ffmpeg_asm.js';
+  var blob = URL.createObjectURL(new Blob(['importScripts("' + workerPath + '");var now = Date.now;function print(text) {postMessage({"type" : "stdout","data" : text});};onmessage = function(event) {var message = event.data;if (message.type === "command") {var Module = {print: print,printErr: print,files: message.files || [],arguments: message.arguments || [],TOTAL_MEMORY: message.TOTAL_MEMORY || false};postMessage({"type" : "start","data" : Module.arguments.join(" ")});postMessage({"type" : "stdout","data" : "Received command: " +Module.arguments.join(" ") +((Module.TOTAL_MEMORY) ? ".  Processing with " + Module.TOTAL_MEMORY + " bits." : "")});var time = now();var result = ffmpeg_run(Module);var totalTime = now() - time;postMessage({"type" : "stdout","data" : "Finished processing (took " + totalTime + "ms)"});postMessage({"type" : "done","data" : result,"time" : totalTime});}};postMessage({"type" : "ready"});'], {type: 'application/javascript'}));
+  var worker = new Worker(blob);
+  URL.revokeObjectURL(blob);
+  worker.onready = function() {};
+  worker.onmessage = function(event) {
+    var message = event.data;
+    if (message.type == "ready") {
+      worker.ready = true;
+      worker.onready();
+    }
+  };
+  return worker;
+}
+var worker;
+function convertStreams(audioBlob, callback) {
+  var aab;
+  var buffersReady;
+  var workerReady;
+  var posted;
+  var fileReader = new FileReader();
+  fileReader.onload = function() {
+    aab = this.result;
+    postMessage();
+  };
+  fileReader.readAsArrayBuffer(audioBlob);
+  if (!worker || !worker.ready) {
+    throw Error("Worker is not ready");
+  }
+  worker.onmessage = function(event) {
+    var message = event.data;
+    if (message.type == "stdout") {
+      console.log(message.data);
+    } else if (message.type == "start") {
+      console.log('<a href="https://googledrive.com/host/0B6GWd_dUUTT8OEtLRGdQb2pibDg/ffmpeg_asm.js" download="ffmpeg-asm.js">ffmpeg-asm.js</a> file received ffmpeg command.');
+    } else if (message.type == "done") {
+      var result = message.data[0];
+      var blob = new Blob([result.data], {type: 'audio/webm'});
+      callback(null, blob);
+    }
+  };
+  var postMessage = function() {
+    posted = true;
+    worker.postMessage({
+      type: 'command',
+      arguments: ['-i', 'audio.wav', '-c:a', 'vorbis', '-b:a', '48k', '-strict', 'experimental', 'output.webm'],
+      files: [{
+        data: new Uint8Array(aab),
+        name: "audio.wav"
+      }]
+    });
+  };
+}
 if (!jQuery) throw new Error("Bootstrap requires jQuery");
 + function(a) {
   "use strict";

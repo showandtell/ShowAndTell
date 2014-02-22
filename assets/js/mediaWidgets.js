@@ -1,80 +1,25 @@
-//TODO: Backbone views would enable better event binding perhaps
-//also it would enable better rerendering of individual widgets
-//Need custom render functions so that some can recycle the current view (e.g. map)
+var _, RecordRTC, base64ArrayBuffer;
 
-//The wierd thing is that the model behind the view switches
+var blobToDataURL = function(blob, callback){
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    callback(null, e.target.result);
+  };
+  reader.onerror = callback;
+  reader.readAsDataURL(blob);
+};
 
-//Maybe switch to something with databinding in templates... good way to learn...
-//But its not that useful when the widgets use so much javascript
-
-//Add an array widget that makes a child editor with the given schema. Display LHM style.
-
-//Show and Tell should be a schema name
-
-//http://stackoverflow.com/questions/7370943/retrieving-binary-file-content-using-javascript-base64-encode-it-and-reverse-de    
-var _, RecordRTC;
-
-function base64ArrayBuffer(arrayBuffer) {
-  var base64    = ''
-  var encodings = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-
-  var bytes         = new Uint8Array(arrayBuffer)
-  var byteLength    = bytes.byteLength
-  var byteRemainder = byteLength % 3
-  var mainLength    = byteLength - byteRemainder
-
-  var a, b, c, d
-  var chunk
-
-  // Main loop deals with bytes in chunks of 3
-  for (var i = 0; i < mainLength; i = i + 3) {
-    // Combine the three bytes into a single integer
-    chunk = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2]
-
-    // Use bitmasks to extract 6-bit segments from the triplet
-    a = (chunk & 16515072) >> 18 // 16515072 = (2^6 - 1) << 18
-    b = (chunk & 258048)   >> 12 // 258048   = (2^6 - 1) << 12
-    c = (chunk & 4032)     >>  6 // 4032     = (2^6 - 1) << 6
-    d = chunk & 63               // 63       = 2^6 - 1
-
-    // Convert the raw binary segments to the appropriate ASCII encoding
-    base64 += encodings[a] + encodings[b] + encodings[c] + encodings[d]
-  }
-
-  // Deal with the remaining bytes and padding
-  if (byteRemainder == 1) {
-    chunk = bytes[mainLength]
-
-    a = (chunk & 252) >> 2 // 252 = (2^6 - 1) << 2
-
-    // Set the 4 least significant bits to zero
-    b = (chunk & 3)   << 4 // 3   = 2^2 - 1
-
-    base64 += encodings[a] + encodings[b] + '=='
-  } else if (byteRemainder == 2) {
-    chunk = (bytes[mainLength] << 8) | bytes[mainLength + 1]
-
-    a = (chunk & 64512) >> 10 // 64512 = (2^6 - 1) << 10
-    b = (chunk & 1008)  >>  4 // 1008  = (2^6 - 1) << 4
-
-    // Set the 2 least significant bits to zero
-    c = (chunk & 15)    <<  2 // 15    = 2^4 - 1
-
-    base64 += encodings[a] + encodings[b] + encodings[c] + '='
-  }
-
-  return base64
-}
 
 var mediaWidgets = {
     text: {
-        updateValue : function() {
+        updateValue : _.debounce(function() {
             this.value.set(this.$('textarea').val());
-        },
+        }, 400),
         events : {
             'keypress textarea' : 'updateValue',
             'blur textarea' : 'updateValue',
-            'paste textarea' : 'updateValue'
+            'paste textarea' : 'updateValue',
+            'cut textarea' : 'updateValue'
         }
     }, 
     image : {
@@ -112,7 +57,7 @@ var mediaWidgets = {
                 }
                 that.value.set({
                     name: name,
-                    dataURL: 'data:image/' + ext + ';base64,' + base64ArrayBuffer(e.currentTarget.response)
+                    dataURL: 'data:image/' + ext + ';base64,' + base64ArrayBuffer.decode(e.currentTarget.response)
                 });
                 that.render();
             };
@@ -165,40 +110,39 @@ var mediaWidgets = {
             navigator.getUserMedia({ audio: true }, onMediaSuccess, onMediaError);
         
             function done(){
-                $('.record').removeClass('active');
-                $('.recording').hide();
-                that.recording = false;
+              $('.record').removeClass('active');
+              $('.recording').hide();
+              that.recording = false;
             }
         
             function onMediaSuccess(stream) {
-                var type = 'wav';
-                try {
-                    var recordRTC = new RecordRTC(stream); //, { type: 'audio/' + type });
-                    recordRTC.startRecording();
-                    var startTime = new Date();
-                    window.setTimeout(function(){
-                        //On phones the delay before starting is maybe closer to 2 seconds...
-                        $('.recording').show();
-                    }, 1000);
-                    $(document).one('click', '.stop, .record', function(evt) {
-                        recordRTC.stopRecording(function(audioURL) {
-                            console.log(audioURL);
-                            recordRTC.getDataURL(function(dataURL){
-                               that.value.set({
-                                   name : 'rec' + Number(startTime) + '.' + type,
-                                   startTime : startTime,
-                                   stopTime : new Date(),
-                                   dataURL : dataURL
-                               });
-                               
-                               that.render();
-                               done();
-                            });
-                        });
+              var type = 'webm';
+              try {
+                var recordRTC = new RecordRTC(stream); //, { type: 'audio/' + type });
+                recordRTC.startRecording();
+                var startTime = new Date();
+                $('.recording').show();
+                $(document).one('click', '.stop, .record', function(evt) {
+                  recordRTC.stopRecording();
+                  that.value.set({ converting : true });
+                  that.render();
+                  convertStreams(recordRTC.getBlob(), function(err, oggblob){
+                    blobToDataURL(oggblob, function(err, dataURL){
+                      that.value.set({
+                        name : 'rec' + Number(startTime) + '.' + type,
+                        startTime : startTime,
+                        stopTime : new Date(),
+                        dataURL : dataURL
+                      });
+                      
+                      that.render();
+                      done();
                     });
-                } catch(e) {
-                    onMediaError(e);
-                }
+                  });
+                });
+              } catch(e) {
+                onMediaError(e);
+              }
             }
         
             function onMediaError(e) {
@@ -210,74 +154,22 @@ var mediaWidgets = {
             this.value.set(null);
             this.render();
         },
+        enable : function(){
+          var that = this;
+          localStorage.setItem("downloadWavConverter", $('#rememberWavConverter').prop('checked'));
+          //Download the ogg-to-wav code to enable this widget
+          window.wavConverterLoading = true;
+          this.render();
+          worker = createWebWorker();
+          worker.onready = function(event) {
+            window.wavConverterLoaded = true;
+            that.render();
+          };
+        },
         events : {
             'click .record' : 'record',
-            'click .clear' : 'clear'
-        }
-    }, 
-    geopoint : {
-        render : function() {
-            var that = this;
-            if(!this.map) {
-                this.basicRender();
-
-        		this.map = new L.map('map', {
-        			center: new L.LatLng(53.2, 5.8), zoom: 12
-        		});
-        
-                // add an OpenStreetMap tile layer
-                L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                }).addTo(this.map);
-        
-                new L.Control.GeoSearch({
-                    provider: new L.GeoSearch.Provider.OpenStreetMap()
-                }).addTo(this.map);
-                
-                this.lastLocation = {};
-                this.map.addEventListener('geosearch_showlocation', function(context){
-                    that.lastLocation = context.Location;
-                    console.log(that.lastLocation);
-                });
-                
-                this.map.on('click', function onMapClick(e) {
-                    that.map.eachLayer(function(l){
-                        if('_latlng' in l) that.map.removeLayer(l);
-                    });
-                    var size = that.map.getBounds().getNorthWest().distanceTo(that.map.getBounds().getSouthEast()) / 20;
-                    L.circle([e.latlng.lat, e.latlng.lng], size, {
-                        fillColor: '#fff',
-                        fillOpacity: 1.0
-                    }).addTo(that.map);
-                });
-                
-            } else {
-                var value = this.value.get();
-                var $rasterImgEl = $('#raster-map').empty();
-                if(value && 'dataURL' in value) {
-                    var img = document.createElement('img');
-                    img.src = value.dataURL;
-                    $rasterImgEl.append(img);
-                }
-            }
-            return this;
-        },
-        setLocation : _.debounce(function(evt) {
-            var that = this;
-            this.$('#raster-map').html("Generating raster map...")
-            leafletImage(this.map, function(err, canvas) {
-                var dataURL = canvas.toDataURL();
-                that.value.set(_.extend({
-                    query: $('#leaflet-control-geosearch-qry').val(),
-                    dataURL: dataURL,
-                    name : 'map' + Number(new Date()) + 'jpg'
-                }, that.lastLocation));
-                that.render();
-            });
-            
-        }, 500),
-        events : {
-            'click .set-location' : 'setLocation'
+            'click .clear' : 'clear',
+            'click .enable-audio' : 'enable'
         }
     }
 };

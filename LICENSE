@@ -1,4 +1,14 @@
-Copyright 2013 Nathan Breit
+The FFMPEG library is optionally loaded by the audio widget.
+The parts FFMPEG the audio widget uses are licenced under LGPL as far as I can tell
+(see https://github.com/bgrins/videoconverter.js/blob/master/LICENSE).
+However, it is possible that the FFMPEG build I used contains GPL v2+ code,
+in which case this code base may be required to be GPL licenced.
+So, if the FFMPEG code this project uses contains GPL code,
+this project is licenced under the GPL v3, otherwise, it is Apache licenced.
+
+--------------------------------------------------------------------------------
+
+Show & Tell Copyright 2013 Nathan Breit
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

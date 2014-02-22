@@ -169,11 +169,14 @@ var exporters = {
             
             $.when(getLogin()).done(function(login){
                 var showLink = function(){
-                    var $openBtn = $('<a class="btn btn-success">Open<a>');
-                    $openBtn.attr('href', '//' + login.username +
+                    var $openBtn = $('<a class="btn btn-success">Open Presentation<a>');
+                    $openBtn.attr('href', 'http://' + login.username +
                         ".github.com/ShowAndTellDocs/presentations/" +
-                        presentationName);
-                    $('#output').empty().append($openBtn);
+                        presentationName)
+                        .attr("target", "_blank");
+                    $('#output').empty()
+                      .append("<p>It may take a few minutes before your presentation is updated on github.</p>")
+                      .append($openBtn);
                 };
                 
                 var deferredRepo = $.Deferred();

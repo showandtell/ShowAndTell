@@ -1,5 +1,4 @@
-var _ = window._;
-var schema, Handlebars, Backbone, mediaWidgets, exporters, importers;
+var _, schema, Handlebars, Backbone, mediaWidgets, exporters;
 
 var viewSchema;
 //Make it correspond to a directory stucture so images can be saved to folders.
@@ -7,101 +6,128 @@ var deck = [
     {}
 ];
 
-var deckTemplate;
-
 var currentCard = deck[0];
-var renderCurrentCard = function(){
-    _.invoke(viewSchema, 'render');
-    renderDeck();
-};
-var renderDeck = function(){
-    $('.cards').empty();
-    _.each(deck, function(card, idx){
-        card.idx = idx;
-        card.isCurrent = currentCard === card;
-    });
-    $('.cards').append(deckTemplate(deck));
-    
-    _.defer(function(){
-        $( ".cards" ).sortable();
-        $( ".cards" ).disableSelection();
-    });
-};
 
 $(document).ready(function () {
 
-deckTemplate =  Handlebars.compile($('#deck-template').html());
+var cardStubTemplate = Handlebars.compile($('#card-stub-template').html());
+
+var renderCurrentCard = function(){
+  _.invoke(viewSchema, 'render');
+  renderDeck();
+};
+var renderDeck = function(){
+  _.each(deck, function(card, idx){
+    card.idx = idx;
+    card.isCurrent = (currentCard === card);
+  });
+  $('.cards').html(deck.map(cardStubTemplate).join(''));
+  
+  _.defer(function(){
+    if(window.deckSortable) return;//window.deckSortable.destroy();
+    var $container = $(".sortable");
+    window.deckSortable = new Sortable($container.get(0), {
+      draggable: ".card-label",
+      ghostClass: "invisible",
+      handle: ".label-handle",
+      onUpdate: function (evt/**Event*/){
+        var newDeck = [];
+        $container.children().each(function(idx, el){
+          console.log(el);
+          var parsedNidx = parseInt(el.id, 10);
+          newDeck[idx] = deck[parsedNidx];
+        });
+        deck = newDeck;
+        renderDeck();
+      }
+    });
+  });
+};
+
+if("localStorage" in window) {
+  if(localStorage.getItem("downloadWavConverter") === "true") {
+    window.wavConverterLoading = true;
+    worker = createWebWorker();
+    worker.onready = function(event) {
+      window.wavConverterLoaded = true;
+      renderCurrentCard();
+    };
+  }
+}
 
 viewSchema = _.map(schema, function(widget, idx){
-    var currentView;
-    var templateString = $("#" + widget.type + "-template").html();
-    if(!templateString) {
-        console.log("missing template");
-        alert("Missing template");
-    }
-    
-    var WidgetView = Backbone.View.extend({
-        template : Handlebars.compile(templateString),
-        basicRender : function(){
-            this.$el.html(this.template({
-                name : this.name,
-                value : this.value.get()
-            }));
-            return this;
-        },
-        render : function(){
-            return this.basicRender();
-        },
-        value : {
-            get : function(){
-                return currentCard[widget.name];
-            },
-            set : function(value){
-                currentCard[widget.name] = value;
-            }
+  var currentView;
+  var templateString = $("#" + widget.type + "-template").html();
+  if(!templateString) {
+    console.log("missing template");
+    alert("Missing template");
+  }
+  
+  var WidgetView = Backbone.View.extend({
+    template : Handlebars.compile(templateString),
+    basicRender : function(){
+      this.$el.html(this.template({
+        name : this.name,
+        value : this.value.get(),
+        wavConverterLoading : window.wavConverterLoading,
+        wavConverterLoaded : window.wavConverterLoaded
+      }));
+      return this;
+    },
+    render : function(){
+      return this.basicRender();
+    },
+    value : {
+      get : function(){
+        return currentCard[widget.name];
+      },
+      set : function(value){
+        currentCard[widget.name] = value;
+        if(widget.name === 'text') {
+          renderDeck();
         }
-    }).extend(mediaWidgets[widget.type]).extend(widget);
-    
-    var $el = $('<div id="' + widget.name + '"></div>');
-    $el.addClass('widget widget-' + (idx % 3) + ' ' + widget.type);
-    $('.output').append($el);
-    currentView = new WidgetView({
-        el: $el
-    });
-    return currentView;
+      }
+    }
+  }).extend(mediaWidgets[widget.type]).extend(widget);
+  
+  var $el = $('<div id="' + widget.name + '"></div>');
+  $el.addClass('widget widget-' + (idx % 3) + ' ' + widget.type);
+  $('.output').append($el);
+  currentView = new WidgetView({
+    el: $el
+  });
+  return currentView;
 });
 renderCurrentCard();
 
+//Deck handlers
 $( document ).on("click", ".card-label", function( event, ui ) {
-    $('textarea').blur();
-    $('.card').addClass('card-animation');
-    window.setTimeout(function(){
-        currentCard = deck[parseInt($(event.target).closest(".card-label").prop('id'), 10)];
-		window.setTimeout( function(){
-		    $('.card').removeClass('card-animation');
-		}, 1000 );
-        renderCurrentCard();
-        $('.deck').addClass("no-show");
-    }, 100);
-});
-$( document ).on("sortupdate", ".sortable", function( event, ui ) {
-    var newDeck = [];
-    _.each($( ".sortable" ).sortable( "toArray" ), function(nidx, idx){
-        var parsedNidx = parseInt(nidx, 10);
-        newDeck[idx] = deck[parsedNidx];
-    });
-    deck = newDeck;
-    renderDeck();
+  $('textarea').blur();
+  $('.card').addClass('card-animation');
+  window.setTimeout(function(){
+    currentCard = deck[parseInt($(event.target).closest(".card-label").prop('id'), 10)];
+    window.setTimeout( function(){
+      $('.card').removeClass('card-animation');
+    }, 1000 );
+    renderCurrentCard();
+    $('.deck').addClass("no-show");
+  }, 100);
 });
 $(document).on('click', '.add-card', function(evt) {
-    deck.push({});
-    renderDeck();
+  deck.push({});
+  renderDeck();
+});
+$(document).on('click', '.rm-card', function(evt) {
+  var currentCardIdx = currentCard.idx;
+  deck.splice(currentCardIdx, 1);
+  currentCard = deck[(currentCardIdx % deck.length)];
+  console.log(currentCard, deck, currentCardIdx);
+  renderDeck();
+  renderCurrentCard();
 });
 
 $(document).on('click', '.toggle-panel', function(evt) {
-                
-    $('.deck').toggleClass("no-show");
-    
+  $('.deck').toggleClass("no-show");
 });
 
 $(document).on('click', '.export-github', function(evt) {

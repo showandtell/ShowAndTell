@@ -32,7 +32,8 @@
             <div class="my-well">
                 <div class="sortable cards"></div>
                 <hr>
-                <button class="btn btn-default btn-lg btn-block add-card">Add card</button>
+                <button class="btn btn-primary btn-lg btn-block add-card">Add card</button>
+                <button class="btn btn-default btn-lg btn-block rm-card">Delete current card</button>
             </div>
         </div>
         
@@ -75,13 +76,18 @@
                   <h4 class="modal-title">Export</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Click here to download your cards as a zipped reveal.js presentation. The presentation is a website you can use anywhere.</p>
-                    <a class="export-zip btn btn-success">zip</a>
-                    <p>
-                      Click here to publish your presentation online using githubs page hosting service.
-                      I haven't implemented oauth so you'll need to trust me and the libraries I'm using with your password.
-                    </p>
-                    <a class="export-github btn btn-success">Publish to github</a>
+                  <dl class="show-and-tell-dl">
+                    <dt>
+                      <a class="export-zip btn btn-success">Download as zip</a>
+                    </dt>
+                    <dd>Download your cards as a zipped reveal.js presentation.
+                      The presentation is a website you can use anywhere.</dd>
+                    <dt>
+                      <a class="export-github btn btn-success">Publish to github</a>
+                    </dt>
+                    <dd>Publish your presentation online using githubs page hosting service.
+                    I haven't implemented oauth so you'll need to trust me and the libraries I'm using with your password.</dd>
+                  </dl>
                 </div>
               </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
@@ -117,52 +123,66 @@
 
 <script>
 var schema = [{
-    name : 'image',
-    type : 'image'
+    name : 'text',
+    type : 'text'
 },{
     name : 'audio',
     hint : 'This currently only works in Desktop Chrome and the latest Firefox.',
     type : 'audio'
-},{
-    name : 'text',
-    type : 'text'
+}, {
+    name : 'image',
+    type : 'image'
 }];
 </script>
 
 <script src="build/all.js"></script>
 
 
-<script id="deck-template" type="text/x-handlebars-template">
-    {{#each this}}
-        <div class="card-label {{#isCurrent}}current{{/isCurrent}}" id="{{idx}}">
-            {{#if image}}
-                <img src="{{image.dataURL}}"></img>
-            {{/if}}
-            {{#if text}}
-                {{text}}
-            {{/if}}
-            <!-- <button class="btn btn-danger remove">rm</button> -->
-        </div>
-    {{/each}}
+<script id="card-stub-template" type="text/x-handlebars-template">
+  <div class="card-label {{#isCurrent}}current{{/isCurrent}}" id="{{idx}}">
+      {{#if previewImageURL}}
+          <img src="{{previewImageURL}}"></img>
+      {{/if}}
+      {{#if text}}
+          <div class="label-text">{{text}}</div>
+      {{/if}}
+      <div class="label-handle"></div>
+  </div>
 </script>
 <script id="text-template" type="text/x-handlebars-template">
-    <h4 class="widget-head">{{name}} <small style="color:black;">(markdown suppported)</small></h4>
+    <h4 class="widget-head">{{name}} <span class="aside">(markdown suppported)</span></h4>
     <textarea>{{value}}</textarea>
 </script>
 <script id="audio-template" type="text/x-handlebars-template">
     <h4 class="widget-head">{{name}}</h4>
-    <button class="btn btn-default record">record</button>
-    <button class="btn btn-default stop">stop</button>
-    <span class="recording" style="display:none;">Recording...</span>
-    <hr>
-    <div>
-    {{#if value}}
-        <audio controls="" autoplay="" name="media">
-            <source src="{{value.dataURL}}" type="audio/wav">
-        </audio>
-        <a class="clear btn">clear</a>
+    {{#if wavConverterLoaded}}
+      <a class="btn btn-info show-and-tell-audio-btn record">record</a>
+      <a class="btn btn-info show-and-tell-audio-btn stop">stop</a>
+      <span class="recording" style="display:none;">Recording...</span>
+      <hr>
+      <div>
+      {{#if value}}
+        {{#if value.converting}}
+          <p>Converting from wav format...</p>
+        {{else}}
+          <audio controls="" autoplay="" name="media">
+              <source src="{{value.dataURL}}" type="audio/webm; codecs=vorbis">
+          </audio>
+          <a class="clear transparent-btn btn">clear</a>
+        {{/if}}
+      {{/if}}
+      </div>
+    {{else}}
+      {{#if wavConverterLoading}}
+        <h3>Loading Wav converter...</h3>
+      {{else}}
+        <p>To use the audio recorder, you will need to load a 20 Megabyte script
+          that coverts your recordings to a more copressed format.
+        </p>
+        <a class="btn btn-default enable-audio">Okay, do it!</a>
+        &nbsp;&nbsp;<input type="checkbox" id="rememberWavConverter" /> Remember my decision
+      {{/if}}
     {{/if}}
-    </div>
 </script>
 <script id="image-template" type="text/x-handlebars-template">
     <h4 class="widget-head">{{name}}</h4>
