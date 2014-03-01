@@ -1,7 +1,7 @@
 body {
-    margin: 0;
-    padding-top: 0;
-    background-color: #F4F4F4;
+  margin: 0;
+  padding-top: 0;
+  background-color: #F4F4F4;
 }
 .invisible {
   visibility: hidden;
@@ -91,7 +91,7 @@ body {
   float: right;
 }
 .card-container {
-  padding-top: 58px;
+  padding-top: 54px;
   margin-left: 0;
 }
 .card {
@@ -102,6 +102,10 @@ body {
   margin: auto;
   margin-bottom: 1em;
   max-width: 600px;
+}
+.ss-title {
+  margin: 4px;
+  padding: 2px;
 }
 .card-label {
   background-color: white;

@@ -9,18 +9,17 @@ var blobToDataURL = function(blob, callback){
   reader.readAsDataURL(blob);
 };
 
-
 var mediaWidgets = {
     text: {
-        updateValue : _.debounce(function() {
-            this.value.set(this.$('textarea').val());
-        }, 400),
-        events : {
-            'keypress textarea' : 'updateValue',
-            'blur textarea' : 'updateValue',
-            'paste textarea' : 'updateValue',
-            'cut textarea' : 'updateValue'
-        }
+      updateValue : _.debounce(function(evt) {
+        var value = $(evt.target).closest('textarea').val();
+        this.value.set(value);
+      }, 100),
+      events : {
+        'keypress textarea' : 'updateValue',
+        'paste textarea' : 'updateValue',
+        'cut textarea' : 'updateValue'
+      }
     }, 
     image : {
         urlChange : _.debounce(function(evt) {
