@@ -23,64 +23,64 @@ var getDataFile = function(path){
 };
 
 var makeRepoPromise = (function(){
-    var repoName = "slide-shows";
-    var repo;
-    return function(){
-      return $.Deferred(function(def){
-        if(repo) def.resolve(repo);
-        def.fail(function(){
-          repo = null;
-        });
-        var github;
-        var username = prompt("username");
-        var password = prompt("password");
-
-        if(!username || !password) {
-          def.reject("Username/password was not provided.");
-        } else {
-          github = new Github({
-            username: username,
-            password: password,
-            auth: "basic"
-          });
-          repo = github.getRepo(username, repoName);
-          repo.show(function(err, info){
-            if(err) {
-              if(err.error === 401) {
-                alert("Incorrect username or password.");
-                makeRepoPromise().done(def.resolve).fail(def.reject);
-              } else {
-                //repo doesn't exist
-                if(!confirm("You don't have a slide-show repository,\n" + 
-                        "can this application create one?")) {
-                  return def.reject("Could not create repo: User rejection");
-                }
-                //fork the repo form me.
-                github.getRepo("nathanathan", repoName).fork(function(err){
-                  repo = github.getRepo(username, repoName);
-                  repo.show(function(err, info){ 
-                    if(err) {
-                      console.log("Couldn't create repo: Possible fork failure.");
-                      def.reject(err);
-                    } else {
-                      repo.ghPagesURL = 'http://' + username +
-                        ".github.com/" + repoName + '/';
-                      def.resolve(repo);
-                    }
-                  });
-                });
-              }
-            } else {
-              //TODO: Should verify the repo is valid
-              repo.ghPagesURL = 'http://' + username +
-                        ".github.com/" + repoName + '/';
-              repo = repo;
-              def.resolve(repo);
-            }
-          });
-        }
+  var repoName = "slide-shows";
+  var repo;
+  return function(){
+    return $.Deferred(function(def){
+      if(repo) return def.resolve(repo);
+      def.fail(function(){
+        repo = null;
       });
-    };
+      var github;
+      var username = prompt("username");
+      var password = prompt("password");
+
+      if(!username || !password) {
+        def.reject("Username/password was not provided.");
+      } else {
+        github = new Github({
+          username: username,
+          password: password,
+          auth: "basic"
+        });
+        repo = github.getRepo(username, repoName);
+        repo.show(function(err, info){
+          if(err) {
+            if(err.error === 401) {
+              alert("Incorrect username or password.");
+              makeRepoPromise().done(def.resolve).fail(def.reject);
+            } else {
+              //repo doesn't exist
+              if(!confirm("You don't have a slide-show repository,\n" + 
+                      "can this application create one?")) {
+                return def.reject("Could not create repo: User rejection");
+              }
+              //fork the repo form me.
+              github.getRepo("nathanathan", repoName).fork(function(err){
+                repo = github.getRepo(username, repoName);
+                repo.show(function(err, info){ 
+                  if(err) {
+                    console.log("Couldn't create repo: Possible fork failure.");
+                    def.reject(err);
+                  } else {
+                    repo.ghPagesURL = 'http://' + username +
+                      ".github.com/" + repoName + '/';
+                    def.resolve(repo);
+                  }
+                });
+              });
+            }
+          } else {
+            //TODO: Should verify the repo is valid
+            repo.ghPagesURL = 'http://' + username +
+                      ".github.com/" + repoName + '/';
+            repo = repo;
+            def.resolve(repo);
+          }
+        });
+      }
+    });
+  };
 }());
 
 var exporters = {

@@ -11193,7 +11193,7 @@ var DeckModel = Backbone.Model.extend({
 });
 var deck = new DeckModel({
   cards: [],
-  name: "slide show"
+  name: "slide-show"
 });
 deck.addCard();
 var currentCard = deck.get('cards')[0];
@@ -11313,6 +11313,13 @@ var initializeUI = function() {
     renderDeck();
     renderCurrentCard();
   });
+  $(document).on('change keypress', '#ss-title-input', function(evt) {
+    deck.set('name', $(evt.currentTarget).val());
+  });
+  deck.on('change:name', function() {
+    $('#ss-title-input').val(deck.get('name'));
+  });
+  deck.trigger('change:name');
   $(document).on('click', '.toggle-panel', function(evt) {
     $('.deck').toggleClass("no-show");
   });
@@ -11336,7 +11343,7 @@ var initializeUI = function() {
     $('#exportModal').modal('hide');
     $('#outputModal').modal({show: true});
     $('#output').text("Creating zip...");
-    exporters.zip(deck.toSmallJSON(), function(err, zipBlob) {
+    exporters.zip(deck, function(err, zipBlob) {
       var $downloadBtn = $('<a class="btn btn-primary">Download<a>');
       $downloadBtn.attr('href', window.URL.createObjectURL(zipBlob));
       $downloadBtn.attr('download', "presentation.zip");
@@ -11390,7 +11397,7 @@ var makeRepoPromise = (function() {
   var repo;
   return function() {
     return $.Deferred(function(def) {
-      if (repo) def.resolve(repo);
+      if (repo) return def.resolve(repo);
       def.fail(function() {
         repo = null;
       });
@@ -11472,7 +11479,11 @@ var exporters = {
       var writer = repo.batchWriter('gh-pages');
       var presentationName = deck.get('name');
       var presDir = presentationName + '/';
+      var mdConverter = new Markdown.Converter();
       _.each(deck.get('cards'), function(card) {
+        if (card.text) {
+          card.formattedText = mdConverter.makeHtml(card.text);
+        }
         if (card.image) {
           card.image.path = 'media/' + card.image.name;
           writer.write(presDir + card.image.path, {
@@ -11489,7 +11500,7 @@ var exporters = {
         }
       });
       writer.write(presDir + 'index.html', revealIndex[0]);
-      writer.write(presDir + 'deck.js', "var deck=" + JSON.stringify(deck.toSmallJSON()));
+      writer.write(presDir + 'deck.js', "var deck=" + JSON.stringify(deck.toSmallJSON(), 0, 2));
       writer.commit("Show & Tell commit").done(function() {
         callback(null, repo.ghPagesURL + presentationName);
       }).fail(function(err) {

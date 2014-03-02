@@ -49,15 +49,15 @@
  {{#each cards}}
 	<section>
 	    <div>{{{formattedText}}}</div>
-      {{#if image}}
+      {{#if image}}{{#if image.path}}
         <div><img src="{{image.path}}" alt="{{image.name}}"></img></div>
-        {{/if}}
+      {{/if}}{{/if}}
         
-        {{#if audio}}
+      {{#if audio}}{{#if audio.path}}
         <div><audio controls="" name="media">
             <source src="{{audio.path}}" type="audio/webm; codecs=vorbis">
         </audio></div>
-        {{/if}}
+      {{/if}}{{/if}}
 	</section>
 	{{/each}}
 	<section>

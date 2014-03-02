@@ -155,8 +155,12 @@ $(document).on('click', '.rm-card', function(evt) {
   renderCurrentCard();
 });
 $(document).on('change keypress', '#ss-title-input', function(evt) {
-  deck.set('name', evt.currentTarget.val());
+  deck.set('name', $(evt.currentTarget).val());
 });
+deck.on('change:name', function(){
+  $('#ss-title-input').val(deck.get('name'));
+});
+deck.trigger('change:name');
 
 $(document).on('click', '.toggle-panel', function(evt) {
   $('.deck').toggleClass("no-show");
@@ -185,7 +189,7 @@ $(document).on('click', '.export-zip', function(evt) {
   $('#exportModal').modal('hide');
   $('#outputModal').modal({show:true});
   $('#output').text("Creating zip...");
-  exporters.zip(deck.toSmallJSON(), function(err, zipBlob){
+  exporters.zip(deck, function(err, zipBlob){
     var $downloadBtn = $('<a class="btn btn-primary">Download<a>');
     $downloadBtn.attr('href', window.URL.createObjectURL(zipBlob));
     $downloadBtn.attr('download', "presentation.zip");

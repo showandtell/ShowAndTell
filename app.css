@@ -107,12 +107,8 @@ body {
   margin: 4px;
   padding: 2px;
 }
-.ss-title label {
-  width: 20%;
-}
 #ss-title-input {
-  width: 70%;
-  padding-left: 5em;
+  width: 100%;
 }
 .card-label {
   background-color: white;
