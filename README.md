@@ -17,7 +17,6 @@ TODO:
 * ~~bug changing slides during ogg processing~~
 * ~~Delete cards, move cards, immediate update of deck, selection icon.~~
 * ~~Pressing stop before the recording starts~~
-* Single source of data on GH put the static files in __reveal and call the repo presentations.
 * import from gh
 * implement gh oauth
 * Ability name presentation when exporting to gh + commit messages
@@ -25,6 +24,7 @@ TODO:
 * Make a presentation about the features
 * Try to encapsulate code for each media widget. Use polymer web components??
 * Is recording possible in windows firefox?
+* keep audio names and overwrite previous files when publishing.
 
 Presentations are published to a github repo called "slide-shows".
 I'm hesitant to use a single repo:

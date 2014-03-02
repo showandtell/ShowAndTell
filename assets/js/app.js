@@ -26,7 +26,7 @@ deck.addCard();
 
 var currentCard = deck.get('cards')[0];
 
-$(document).ready(function () {
+var initializeUI = function () {
 
 var cardStubTemplate = Handlebars.compile($('#card-stub-template').html());
 
@@ -160,16 +160,43 @@ $(document).on('click', '.toggle-panel', function(evt) {
 });
 
 $(document).on('click', '.export-github', function(evt) {
-  $('#download').text('uploading to github...');
-  exporters.github(deck);
+  $('#exportModal').modal('hide');
+  $('#outputModal').modal({show:true});
+  $('#output').text("Publishing to github...");
+  exporters.github(deck, function(err, pubURL){
+    if(err) {
+      $('#output').html("<p>The presentation could not be published.</p>");
+      console.log(err);
+      return;
+    }
+    var $openBtn = $('<a class="btn btn-success">Open Presentation<a>');
+    $openBtn.attr('href', pubURL)
+        .attr("target", "_blank");
+    $('#output').empty()
+      .append("<p>It may take a few minutes before your presentation is updated on github.</p>")
+      .append($openBtn);
+  });
 });
 $(document).on('click', '.export-zip', function(evt) {
   $('#download').text('generating zip...');
-  exporters.zip(deck);
+  $('#exportModal').modal('hide');
+  $('#outputModal').modal({show:true});
+  $('#output').text("Creating zip...");
+  exporters.zip(deck.toSmallJSON(), function(err, zipBlob){
+    var $downloadBtn = $('<a class="btn btn-primary">Download<a>');
+    $downloadBtn.attr('href', window.URL.createObjectURL(zipBlob));
+    $downloadBtn.attr('download', "presentation.zip");
+    $('#output').empty().append($downloadBtn);
+  });
 });
 $(document).on('change', '.uploadzip', function(evt) {
   $('.uploadzip-status').empty();
-  importers.zip(evt, function(deckJSON){
+  var files = evt.target.files;
+  importers.zip(files[0], function(err, deckJSON){
+    if(err) {
+      console.log(err);
+      return;
+    }
     deck.set('cards', deckJSON.cards);
     deck.set('name', deckJSON.name);
     $('.uploadzip-status').text("Imported!");
@@ -180,9 +207,10 @@ $(document).on('change', '.uploadzip', function(evt) {
   $('.uploadzip-status').text("importing...");
 });
 $(document).one('click', '.help', function(evt) {
+  //TODO: Remove when closed for 60 seconds to conserve memory
   $('.help-body').html('<iframe src="tutorial/index.html" seamless="seamless" style="width:100%;height:340px"></iframe>');
 });
 
 $('.loading').remove();
 
-});
+};

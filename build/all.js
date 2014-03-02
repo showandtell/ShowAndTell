@@ -8221,6 +8221,63 @@ var base64ArrayBuffer = (function(chars) {
   };
   return base64ArrayBuffer;
 })("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
+var Base64 = (function() {
+  var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  var obj = {
+    encode: function(input) {
+      var output = "";
+      var chr1, chr2, chr3;
+      var enc1, enc2, enc3, enc4;
+      var i = 0;
+      do {
+        chr1 = input.charCodeAt(i++);
+        chr2 = input.charCodeAt(i++);
+        chr3 = input.charCodeAt(i++);
+        enc1 = chr1 >> 2;
+        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+        enc4 = chr3 & 63;
+        if (isNaN(chr2)) {
+          enc3 = enc4 = 64;
+        } else if (isNaN(chr3)) {
+          enc4 = 64;
+        }
+        output = output + keyStr.charAt(enc1) + keyStr.charAt(enc2) + keyStr.charAt(enc3) + keyStr.charAt(enc4);
+      } while (i < input.length);
+      return output;
+    },
+    decode: function(input) {
+      var output = "";
+      var chr1, chr2, chr3;
+      var enc1, enc2, enc3, enc4;
+      var i = 0;
+      input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+      do {
+        enc1 = keyStr.indexOf(input.charAt(i++));
+        enc2 = keyStr.indexOf(input.charAt(i++));
+        enc3 = keyStr.indexOf(input.charAt(i++));
+        enc4 = keyStr.indexOf(input.charAt(i++));
+        chr1 = (enc1 << 2) | (enc2 >> 4);
+        chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+        chr3 = ((enc3 & 3) << 6) | enc4;
+        output = output + String.fromCharCode(chr1);
+        if (enc3 != 64) {
+          output = output + String.fromCharCode(chr2);
+        }
+        if (enc4 != 64) {
+          output = output + String.fromCharCode(chr3);
+        }
+      } while (i < input.length);
+      return output;
+    }
+  };
+  return obj;
+})();
+if (typeof exports !== 'undefined') {
+  module.exports = Base64;
+} else {
+  window.Base64 = Base64;
+}
 (function() {
   var XMLHttpRequest, Base64, _;
   if (typeof exports !== 'undefined') {
@@ -8596,38 +8653,57 @@ var base64ArrayBuffer = (function(chars) {
           });
         });
       };
-      this.batchWriter = function(branch, cb) {
+      this.batchWriter = function(branch) {
         var lastCommitDeferred = $.Deferred();
         var prevAction = lastCommitDeferred;
+        var lastCommit;
         updateTree(branch, function(err, latestCommit) {
-          if (err) return cb(err);
-          lastCommitDeferred.resolve(latestCommit);
+          if (err) {
+            lastCommitDeferred.reject(err);
+          } else {
+            lastCommitDeferred.resolve(latestCommit);
+            lastCommit = latestCommit;
+          }
+        });
+        lastCommitDeferred.then(function(x) {
+          console.log(x);
         });
         return {
-          write: function(path, content, cb) {
+          write: function(path, content) {
             var thisAction = $.Deferred();
             prevAction.done(function(tree) {
-              console.log('writing', path);
+              console.log('writing ' + path);
               that.postBlob(content, function(err, blob) {
-                if (err) return cb(err);
+                if (err) return thisAction.reject(err);
                 that.updateTree(tree, path, blob, function(err, tree) {
-                  if (err) return cb(err);
+                  if (err) return thisAction.reject(err);
                   thisAction.resolve(tree);
-                  cb(null);
                 });
               });
-            });
+            }).fail(thisAction.reject);
             prevAction = thisAction;
+            return thisAction;
           },
-          commit: function(message, cb) {
-            console.log('COMMIT');
-            $.when(lastCommitDeferred, prevAction).done(function(lastCommit, tree) {
+          commit: function(message) {
+            var def = $.Deferred();
+            prevAction.done(function(tree) {
               that.commit(lastCommit, tree, message, function(err, commit) {
-                if (err) return cb(err);
-                that.updateHead(branch, commit, cb);
+                if (err) {
+                  def.reject(err);
+                } else {
+                  that.updateHead(branch, commit, function() {
+                    if (err) {
+                      def.reject(err);
+                    } else {
+                      def.resolve();
+                    }
+                  });
+                }
               });
             });
+            prevAction.fail(def.reject);
             prevAction = null;
+            return def;
           }
         };
       };
@@ -11108,7 +11184,7 @@ var DeckModel = Backbone.Model.extend({
   toSmallJSON: function() {
     var json = this.toJSON();
     return _.extend({}, json, {cards: _.map(json.cards, function(card) {
-        return _.extend({}, card, {
+        return _.extend(_.omit(card, ['idx', 'isCurrent']), {
           image: _.omit(card.image, 'dataURL'),
           audio: _.omit(card.audio, 'dataURL')
         });
@@ -11121,7 +11197,7 @@ var deck = new DeckModel({
 });
 deck.addCard();
 var currentCard = deck.get('cards')[0];
-$(document).ready(function() {
+var initializeUI = function() {
   var cardStubTemplate = Handlebars.compile($('#card-stub-template').html());
   var renderCurrentCard = function() {
     if (!currentCard) {
@@ -11241,16 +11317,40 @@ $(document).ready(function() {
     $('.deck').toggleClass("no-show");
   });
   $(document).on('click', '.export-github', function(evt) {
-    $('#download').text('uploading to github...');
-    exporters.github(deck);
+    $('#exportModal').modal('hide');
+    $('#outputModal').modal({show: true});
+    $('#output').text("Publishing to github...");
+    exporters.github(deck, function(err, pubURL) {
+      if (err) {
+        $('#output').html("<p>The presentation could not be published.</p>");
+        console.log(err);
+        return;
+      }
+      var $openBtn = $('<a class="btn btn-success">Open Presentation<a>');
+      $openBtn.attr('href', pubURL).attr("target", "_blank");
+      $('#output').empty().append("<p>It may take a few minutes before your presentation is updated on github.</p>").append($openBtn);
+    });
   });
   $(document).on('click', '.export-zip', function(evt) {
     $('#download').text('generating zip...');
-    exporters.zip(deck);
+    $('#exportModal').modal('hide');
+    $('#outputModal').modal({show: true});
+    $('#output').text("Creating zip...");
+    exporters.zip(deck.toSmallJSON(), function(err, zipBlob) {
+      var $downloadBtn = $('<a class="btn btn-primary">Download<a>');
+      $downloadBtn.attr('href', window.URL.createObjectURL(zipBlob));
+      $downloadBtn.attr('download', "presentation.zip");
+      $('#output').empty().append($downloadBtn);
+    });
   });
   $(document).on('change', '.uploadzip', function(evt) {
     $('.uploadzip-status').empty();
-    importers.zip(evt, function(deckJSON) {
+    var files = evt.target.files;
+    importers.zip(files[0], function(err, deckJSON) {
+      if (err) {
+        console.log(err);
+        return;
+      }
       deck.set('cards', deckJSON.cards);
       deck.set('name', deckJSON.name);
       $('.uploadzip-status').text("Imported!");
@@ -11263,8 +11363,8 @@ $(document).ready(function() {
     $('.help-body').html('<iframe src="tutorial/index.html" seamless="seamless" style="width:100%;height:340px"></iframe>');
   });
   $('.loading').remove();
-});
-var JSZip, Handlebars, _;
+};
+var JSZip, _, Github, Markdown;
 var stripPrefix = function(str) {
   return str.split(',')[1];
 };
@@ -11286,38 +11386,43 @@ var getDataFile = function(path) {
   return def;
 };
 var makeRepoPromise = (function() {
-  var repoName = "ShowAndTellDocs";
+  var repoName = "slide-shows";
+  var repo;
   return function() {
     return $.Deferred(function(def) {
       if (repo) def.resolve(repo);
+      def.fail(function() {
+        repo = null;
+      });
       var github;
       var username = prompt("username");
       var password = prompt("password");
       if (!username || !password) {
-        def.reject();
+        def.reject("Username/password was not provided.");
       } else {
         github = new Github({
           username: username,
           password: password,
           auth: "basic"
         });
-        var repo = github.getRepo(username, repoName);
+        repo = github.getRepo(username, repoName);
         repo.show(function(err, info) {
           if (err) {
             if (err.error === 401) {
               alert("Incorrect username or password.");
-              makeRepoPromise().then(def.resolve);
+              makeRepoPromise().done(def.resolve).fail(def.reject);
             } else {
+              if (!confirm("You don't have a slide-show repository,\n" + "can this application create one?")) {
+                return def.reject("Could not create repo: User rejection");
+              }
               github.getRepo("nathanathan", repoName).fork(function(err) {
-                var repo = github.getRepo(username, repoName);
+                repo = github.getRepo(username, repoName);
                 repo.show(function(err, info) {
                   if (err) {
-                    console.log(err);
-                    alert("Couldn't create repo");
-                    def.reject("Couldn't create repo");
+                    console.log("Couldn't create repo: Possible fork failure.");
+                    def.reject(err);
                   } else {
                     repo.ghPagesURL = 'http://' + username + ".github.com/" + repoName + '/';
-                    repo = repo;
                     def.resolve(repo);
                   }
                 });
@@ -11334,10 +11439,7 @@ var makeRepoPromise = (function() {
   };
 }());
 var exporters = {
-  zip: function(deck) {
-    $('#exportModal').modal('hide');
-    $('#outputModal').modal({show: true});
-    $('#output').text("Creating zip...");
+  zip: function(deck, callback) {
     var zipPromise = getDataFile('reveal.js.zip');
     var mdConverter = new Markdown.Converter();
     var writeZipPromise = $.Deferred();
@@ -11347,95 +11449,51 @@ var exporters = {
         if (card.text) {
           card.formattedText = mdConverter.makeHtml(card.text);
         }
-        if (card.image) {
+        if (card.image && card.image.dataURL) {
           card.image.path = 'media/' + card.image.name;
           zip.file('slideshow/' + card.image.path, stripPrefix(card.image.dataURL), {base64: true});
         }
-        if (card.audio) {
+        if (card.audio && card.audio.dataURL) {
           card.audio.path = 'media/' + card.audio.name;
           zip.file('slideshow/' + card.audio.path, stripPrefix(card.audio.dataURL), {base64: true});
         }
       });
       writeZipPromise.resolve(zip);
     });
-    $.when(writeZipPromise, $.get('assets/revealIndex.html')).then(function(zip, revealIndex) {
+    $.when(writeZipPromise, $.get('assets/revealIndex.html')).done(function(zip, revealIndex) {
       zip.file('slideshow/deck.js', "var deck=" + JSON.stringify(deck.toSmallJSON()));
       zip.file('slideshow/index.html', revealIndex[0]);
-      var zipped = zip.generate({type: 'blob'});
-      var $downloadBtn = $('<a class="btn btn-primary">Download<a>');
-      $downloadBtn.attr('href', window.URL.createObjectURL(zipped));
-      $downloadBtn.attr('download', "presentation.zip");
-      $('#output').empty().append($downloadBtn);
-    });
+      var zipBlob = zip.generate({type: 'blob'});
+      callback(null, zipBlob);
+    }).fail(callback);
   },
-  github: function(deck) {
-    $('#exportModal').modal('hide');
-    $('#outputModal').modal({show: true});
-    $('#output').text("Publishing to github...");
-    var presentationName = deck.get('name');
-    var cards = deck.get('cards');
-    $.get('assets/revealIndex.html', function(revealIndex) {
-      $.when(makeRepoPromise()).done(function(repo) {
-        var writer = repo.batchWriter('gh-pages', function(err) {
-          console.log(err);
-        });
-        var presDir = presentationName + '/';
-        var mediaSaved = $.Deferred().resolve();
-        _.each(cards, function(card) {
-          if (card.image) {
-            mediaSaved = $.when(mediaSaved, $.Deferred(function(thisDeferred) {
-              card.image.path = card.image.name;
-              writer.write(presDir + card.image.path, {
-                content: stripPrefix(card.image.dataURL),
-                encoding: 'base64'
-              }, function(err, s) {
-                if (err) {
-                  thisDeferred.reject(err);
-                } else {
-                  thisDeferred.resolve();
-                }
-              });
-            }));
-          }
-          if (card.audio) {
-            mediaSaved = $.when(mediaSaved, $.Deferred(function(thisDeferred) {
-              card.audio.path = card.audio.name;
-              writer.write(presDir + card.audio.path, {
-                content: stripPrefix(card.audio.dataURL),
-                encoding: 'base64'
-              }, function(err, s) {
-                if (err) {
-                  thisDeferred.reject(err);
-                } else {
-                  thisDeferred.resolve();
-                }
-              });
-            }));
-          }
-        });
-        var dataWritten = $.when(mediaSaved, $.Deferred(function(indexWritten) {
-          writer.write(presDir + 'index.html', revealIndex, function(err) {
-            if (err) return indexWritten.reject(err);
-            indexWritten.resolve();
+  github: function(deck, callback) {
+    $.when(makeRepoPromise(), $.get('assets/revealIndex.html')).fail(callback).done(function(repo, revealIndex) {
+      var writer = repo.batchWriter('gh-pages');
+      var presentationName = deck.get('name');
+      var presDir = presentationName + '/';
+      _.each(deck.get('cards'), function(card) {
+        if (card.image) {
+          card.image.path = 'media/' + card.image.name;
+          writer.write(presDir + card.image.path, {
+            content: stripPrefix(card.image.dataURL),
+            encoding: 'base64'
           });
-        }), $.Deferred(function(deckWritten) {
-          writer.write(presDir + 'deck.js', "var deck=" + JSON.stringify(deck.toJSON()), function(err) {
-            if (err) return deckWritten.reject(err);
-            deckWritten.resolve();
+        }
+        if (card.audio) {
+          card.audio.path = 'media/' + card.audio.name;
+          writer.write(presDir + card.audio.path, {
+            content: stripPrefix(card.audio.dataURL),
+            encoding: 'base64'
           });
-        }));
-        dataWritten.done(function() {
-          writer.commit("Commited", function(err) {
-            console.log(err);
-            var $openBtn = $('<a class="btn btn-success">Open Presentation<a>');
-            $openBtn.attr('href', repo.ghPagesURL + presentationName).attr("target", "_blank");
-            $('#output').empty().append("<p>It may take a few minutes before your presentation is updated on github.</p>").append($openBtn);
-          });
-        });
-        dataWritten.fail(function(err) {
-          console.log("data write fail!");
-          console.log(err);
-        });
+        }
+      });
+      writer.write(presDir + 'index.html', revealIndex[0]);
+      writer.write(presDir + 'deck.js', "var deck=" + JSON.stringify(deck.toSmallJSON()));
+      writer.commit("Show & Tell commit").done(function() {
+        callback(null, repo.ghPagesURL + presentationName);
+      }).fail(function(err) {
+        callback(err);
       });
     });
   }
@@ -11444,7 +11502,7 @@ var _, JSZip;
 var getExt = function(path) {
   return path.split('.').unshift();
 };
-var importers = {zip: function(evt, callback) {
+var importers = {zip: function(file, callback) {
     var loadExternalAssets = function(zip, deck) {
       var assetsLoaded = $.Deferred();
       assetsLoaded.resolve();
@@ -11462,25 +11520,25 @@ var importers = {zip: function(evt, callback) {
           assetsLoaded = $.when(assetsLoaded, $.Deferred(function(thisDeferred) {
             _.defer(function() {
               var arrayBuffer = zip.file('slideshow/' + card.audio.path).asArrayBuffer();
-              card.audio.dataURL = 'data:audio/' + getExt(card.image.path) + ';base64,' + base64ArrayBuffer.encode(arrayBuffer);
+              card.audio.dataURL = 'data:audio/' + getExt(card.audio.path) + ';base64,' + base64ArrayBuffer.encode(arrayBuffer);
               thisDeferred.resolve();
             });
           }));
         }
       });
       $.when(assetsLoaded).then(function() {
-        callback(deck);
+        callback(null, deck);
       });
     };
-    var files = evt.target.files;
-    var file = files[0];
     var reader = new FileReader();
     reader.onload = function(readEvent) {
       var zip = new JSZip(readEvent.target.result, {base64: false});
       var oldFormat = zip.file('deck.json');
+      console.log(zip);
+      window.zip = zip;
       if (oldFormat) {
-        callback({
-          name: readEvent.target.name,
+        callback(null, {
+          name: readEvent.target.name || "slideshow",
           cards: JSON.parse(zip.file('deck.json').asText())
         });
       } else {
@@ -11489,7 +11547,7 @@ var importers = {zip: function(evt, callback) {
     };
     reader.readAsArrayBuffer(file);
   }};
-var _, RecordRTC, base64ArrayBuffer;
+var _, RecordRTC, base64ArrayBuffer, createWebWorker, convertStreams;
 var blobToDataURL = function(blob, callback) {
   var reader = new FileReader();
   reader.onload = function(e) {

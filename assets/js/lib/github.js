@@ -605,38 +605,55 @@
       };
       
       //This was added for ShowAndTell
-      this.batchWriter = function(branch, cb) {
+      this.batchWriter = function(branch) {
         var lastCommitDeferred = $.Deferred();
         var prevAction = lastCommitDeferred;
+        var lastCommit;
         updateTree(branch, function(err, latestCommit) {
-          if (err) return cb(err);
-          lastCommitDeferred.resolve(latestCommit);
+          if (err) {
+            lastCommitDeferred.reject(err);
+          } else {
+            lastCommitDeferred.resolve(latestCommit);
+            lastCommit = latestCommit;
+          }
         });
+        lastCommitDeferred.then(function(x){ console.log(x) });
         return {
-          write: function(path, content, cb){
+          write: function(path, content){
             var thisAction = $.Deferred();
             prevAction.done(function(tree){
-              console.log('writing', path);
+              console.log('writing ' + path);
               that.postBlob(content, function(err, blob) {
-                if (err) return cb(err);
+                if (err) return thisAction.reject(err);
                 that.updateTree(tree, path, blob, function(err, tree) {
-                  if (err) return cb(err);
+                  if (err) return thisAction.reject(err);
                   thisAction.resolve(tree);
-                  cb(null);
                 });
               });
-            });
+            }).fail(thisAction.reject);
             prevAction = thisAction;
+            return thisAction;
           },
-          commit: function(message, cb){
-            console.log('COMMIT');
-            $.when(lastCommitDeferred, prevAction).done(function(lastCommit, tree){
+          commit: function(message){
+            var def = $.Deferred();
+            prevAction.done(function(tree) {
               that.commit(lastCommit, tree, message, function(err, commit) {
-                if (err) return cb(err);
-                that.updateHead(branch, commit, cb);
+                if (err) {
+                  def.reject(err);
+                } else {
+                  that.updateHead(branch, commit, function(){
+                    if (err) {
+                      def.reject(err);
+                    } else {
+                      def.resolve();
+                    }
+                  });
+                }
               });
             });
+            prevAction.fail(def.reject);
             prevAction = null;
+            return def;
           }
         };
       };

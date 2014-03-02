@@ -3,7 +3,7 @@ var getExt = function(path){
   return path.split('.').unshift();
 };
 var importers = {
-  zip : function(evt, callback) {
+  zip : function(file, callback) {
     var loadExternalAssets = function(zip, deck){
       var assetsLoaded = $.Deferred();
       assetsLoaded.resolve();
@@ -22,7 +22,7 @@ var importers = {
           assetsLoaded = $.when(assetsLoaded, $.Deferred(function(thisDeferred){
             _.defer(function(){
               var arrayBuffer = zip.file('slideshow/' + card.audio.path).asArrayBuffer()
-              card.audio.dataURL = 'data:audio/' + getExt(card.image.path) + ';base64,' +
+              card.audio.dataURL = 'data:audio/' + getExt(card.audio.path) + ';base64,' +
                 base64ArrayBuffer.encode(arrayBuffer);
               thisDeferred.resolve();
             });
@@ -30,18 +30,17 @@ var importers = {
         }
       });
       $.when(assetsLoaded).then(function(){
-        callback(deck);
+        callback(null, deck);
       });
     };
-    var files = evt.target.files;
-    var file = files[0];
     var reader = new FileReader();
     reader.onload = function(readEvent) {
       var zip = new JSZip(readEvent.target.result, {base64 : false});
       var oldFormat = zip.file('deck.json');
+      console.log(zip); window.zip = zip;
       if(oldFormat) {
-        callback({
-          name : readEvent.target.name,
+        callback(null, {
+          name : readEvent.target.name || "slideshow",
           cards : JSON.parse(zip.file('deck.json').asText())
         });
       } else {

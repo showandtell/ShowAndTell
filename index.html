@@ -133,6 +133,8 @@
               </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
           </div><!-- /.modal -->
+
+<script src="build/all.js"></script>
 <script>
 var schema = [{
     name : 'text',
@@ -145,9 +147,8 @@ var schema = [{
     name : 'image',
     type : 'image'
 }];
+$(document).ready(initializeUI);
 </script>
-
-<script src="build/all.js"></script>
 
 <script id="commit-template" type="text/x-handlebars-template">
   <label>Presentation name</label><input />

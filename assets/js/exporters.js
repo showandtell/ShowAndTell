@@ -1,4 +1,4 @@
-var JSZip, Handlebars, _;
+var JSZip, _, Github, Markdown;
 
 var stripPrefix = function(str){
   return str.split(',')[1];
@@ -23,44 +23,48 @@ var getDataFile = function(path){
 };
 
 var makeRepoPromise = (function(){
-    var repoName = "ShowAndTellDocs";
+    var repoName = "slide-shows";
+    var repo;
     return function(){
       return $.Deferred(function(def){
         if(repo) def.resolve(repo);
-        
+        def.fail(function(){
+          repo = null;
+        });
         var github;
         var username = prompt("username");
         var password = prompt("password");
 
         if(!username || !password) {
-          def.reject();
+          def.reject("Username/password was not provided.");
         } else {
           github = new Github({
             username: username,
             password: password,
             auth: "basic"
           });
-          var repo = github.getRepo(username, repoName);
+          repo = github.getRepo(username, repoName);
           repo.show(function(err, info){
             if(err) {
               if(err.error === 401) {
                 alert("Incorrect username or password.");
-                //TODO
-                makeRepoPromise().then(def.resolve);
+                makeRepoPromise().done(def.resolve).fail(def.reject);
               } else {
-                //repo doesn't exist?
+                //repo doesn't exist
+                if(!confirm("You don't have a slide-show repository,\n" + 
+                        "can this application create one?")) {
+                  return def.reject("Could not create repo: User rejection");
+                }
                 //fork the repo form me.
                 github.getRepo("nathanathan", repoName).fork(function(err){
-                  var repo = github.getRepo(username, repoName);
+                  repo = github.getRepo(username, repoName);
                   repo.show(function(err, info){ 
                     if(err) {
-                      console.log(err);
-                      alert("Couldn't create repo");
-                      def.reject("Couldn't create repo");
+                      console.log("Couldn't create repo: Possible fork failure.");
+                      def.reject(err);
                     } else {
                       repo.ghPagesURL = 'http://' + username +
                         ".github.com/" + repoName + '/';
-                      repo = repo;
                       def.resolve(repo);
                     }
                   });
@@ -80,11 +84,7 @@ var makeRepoPromise = (function(){
 }());
 
 var exporters = {
-  zip : function(deck){
-    $('#exportModal').modal('hide');
-    $('#outputModal').modal({show:true});
-    $('#output').text("Creating zip...");
-      
+  zip : function(deck, callback){
     var zipPromise = getDataFile('reveal.js.zip');
 
     var mdConverter = new Markdown.Converter();
@@ -100,13 +100,13 @@ var exporters = {
         if(card.text) {
           card.formattedText = mdConverter.makeHtml(card.text);
         }
-        if(card.image) {
+        if(card.image && card.image.dataURL) {
           card.image.path = 'media/' + card.image.name;
           zip.file('slideshow/' + card.image.path, stripPrefix(card.image.dataURL), {
             base64: true
           });
         }
-        if(card.audio) {
+        if(card.audio && card.audio.dataURL) {
           card.audio.path = 'media/' + card.audio.name;
           zip.file('slideshow/' + card.audio.path, stripPrefix(card.audio.dataURL), {
             base64: true
@@ -117,102 +117,48 @@ var exporters = {
     });
     
     $.when(writeZipPromise, $.get('assets/revealIndex.html'))
-     .then(function(zip, revealIndex){
+     .done(function(zip, revealIndex){
       zip.file('slideshow/deck.js', "var deck=" + JSON.stringify(deck.toSmallJSON()));
       zip.file('slideshow/index.html', revealIndex[0]);
-      var zipped = zip.generate({
+      var zipBlob = zip.generate({
           type:'blob'
       });
-      var $downloadBtn = $('<a class="btn btn-primary">Download<a>');
-      $downloadBtn.attr('href', window.URL.createObjectURL(zipped));
-      $downloadBtn.attr('download', "presentation.zip");
-      $('#output').empty().append($downloadBtn);
-    });
+      callback(null, zipBlob);
+    }).fail(callback);
 
   },
-  github : function(deck){
-    $('#exportModal').modal('hide');
-    $('#outputModal').modal({show:true});
-    $('#output').text("Publishing to github...");
-    
-    var presentationName = deck.get('name');
-    var cards = deck.get('cards');
-    
-    $.get('assets/revealIndex.html', function(revealIndex){
-        
-        $.when(makeRepoPromise()).done(function(repo){
-            var writer = repo.batchWriter('gh-pages', function(err){
-              console.log(err);
-            });
-            var presDir = presentationName + '/';
+  github : function(deck, callback){
+    $.when(makeRepoPromise(), $.get('assets/revealIndex.html'))
+     .fail(callback)
+     .done(function(repo, revealIndex){
+      var writer = repo.batchWriter('gh-pages');
+      
+      var presentationName = deck.get('name');
+      var presDir = presentationName + '/';
 
-            var mediaSaved = $.Deferred().resolve();
-            _.each(cards, function(card){
-              
-              if(card.image) {
-                  mediaSaved = $.when(mediaSaved, $.Deferred(function(thisDeferred){
-                      card.image.path = card.image.name;
-                      writer.write(presDir + card.image.path,
-                          {
-                              content: stripPrefix(card.image.dataURL),
-                              encoding : 'base64'
-                          }, function(err, s) {
-                              if(err) {
-                                  thisDeferred.reject(err);
-                              } else {
-                                  thisDeferred.resolve();
-                              }
-                          });
-                  }));
-              }
-              if(card.audio) {
-                  mediaSaved = $.when(mediaSaved, $.Deferred(function(thisDeferred){
-                      card.audio.path = card.audio.name;
-                      writer.write(presDir + card.audio.path,
-                          {
-                              content: stripPrefix(card.audio.dataURL),
-                              encoding : 'base64'
-                          }, function(err, s) {
-                              if(err) {
-                                  thisDeferred.reject(err);
-                              } else {
-                                  thisDeferred.resolve();
-                              }
-                          });
-                  }));
-              }
-            });
-            var dataWritten = $.when(mediaSaved,
-              $.Deferred(function(indexWritten){
-                writer.write(presDir + 'index.html',
-                  revealIndex, function(err) {
-                    if(err) return indexWritten.reject(err);
-                    indexWritten.resolve();
-                  });
-              }), $.Deferred(function(deckWritten){
-                writer.write(presDir + 'deck.js',
-                "var deck=" + JSON.stringify(deck.toJSON()), function(err) {
-                  if(err) return deckWritten.reject(err);
-                  deckWritten.resolve();
-                });
-              })
-            );
-            dataWritten.done(function(){
-              writer.commit("Commited", function(err){
-                console.log(err);
-                var $openBtn = $('<a class="btn btn-success">Open Presentation<a>');
-                $openBtn.attr('href', repo.ghPagesURL + presentationName)
-                    .attr("target", "_blank");
-                $('#output').empty()
-                  .append("<p>It may take a few minutes before your presentation is updated on github.</p>")
-                  .append($openBtn);
-              });
-            });
-            dataWritten.fail(function(err){
-              console.log("data write fail!");
-              console.log(err);
-            });
-        });
+      _.each(deck.get('cards'), function(card){
+        if(card.image) {
+          card.image.path = 'media/' + card.image.name;
+          writer.write(presDir + card.image.path, {
+            content: stripPrefix(card.image.dataURL),
+            encoding : 'base64'
+          });
+        }
+        if(card.audio) {
+          card.audio.path = 'media/' + card.audio.name;
+          writer.write(presDir + card.audio.path, {
+            content: stripPrefix(card.audio.dataURL),
+            encoding : 'base64'
+          });
+        }
+      });
+      writer.write(presDir + 'index.html', revealIndex[0]);
+      writer.write(presDir + 'deck.js', "var deck=" + JSON.stringify(deck.toSmallJSON()));
+      writer.commit("Show & Tell commit").done(function(){
+        callback(null, repo.ghPagesURL + presentationName);
+      }).fail(function(err){
+        callback(err);
+      });
     });
   }
 };

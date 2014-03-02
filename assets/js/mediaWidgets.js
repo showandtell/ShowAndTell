@@ -1,4 +1,4 @@
-var _, RecordRTC, base64ArrayBuffer;
+var _, RecordRTC, base64ArrayBuffer, createWebWorker, convertStreams;
 
 var blobToDataURL = function(blob, callback){
   var reader = new FileReader();
