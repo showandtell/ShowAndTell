@@ -20,7 +20,7 @@ var DeckModel = Backbone.Model.extend({
 });
 var deck = new DeckModel({
   cards : [],
-  name : "slide show"
+  name : "slide-show"
 });
 deck.addCard();
 
@@ -153,6 +153,9 @@ $(document).on('click', '.rm-card', function(evt) {
   currentCard = newCards[(currentCardIdx % newCards.length)];
   renderDeck();
   renderCurrentCard();
+});
+$(document).on('change keypress', '#ss-title-input', function(evt) {
+  deck.set('name', evt.currentTarget.val());
 });
 
 $(document).on('click', '.toggle-panel', function(evt) {

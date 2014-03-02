@@ -17,9 +17,9 @@ TODO:
 * ~~bug changing slides during ogg processing~~
 * ~~Delete cards, move cards, immediate update of deck, selection icon.~~
 * ~~Pressing stop before the recording starts~~
+* ~~Ability name presentation when exporting to gh~~
 * import from gh
 * implement gh oauth
-* Ability name presentation when exporting to gh + commit messages
 * ~~Covert wave audio files to something that plays everywhere~~
 * Make a presentation about the features
 * Try to encapsulate code for each media widget. Use polymer web components??

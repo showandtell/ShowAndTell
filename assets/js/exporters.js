@@ -136,7 +136,12 @@ var exporters = {
       var presentationName = deck.get('name');
       var presDir = presentationName + '/';
 
+      var mdConverter = new Markdown.Converter();
+
       _.each(deck.get('cards'), function(card){
+        if(card.text) {
+          card.formattedText = mdConverter.makeHtml(card.text);
+        }
         if(card.image) {
           card.image.path = 'media/' + card.image.name;
           writer.write(presDir + card.image.path, {
@@ -153,7 +158,7 @@ var exporters = {
         }
       });
       writer.write(presDir + 'index.html', revealIndex[0]);
-      writer.write(presDir + 'deck.js', "var deck=" + JSON.stringify(deck.toSmallJSON()));
+      writer.write(presDir + 'deck.js', "var deck=" + JSON.stringify(deck.toSmallJSON(), 0, 2));
       writer.commit("Show & Tell commit").done(function(){
         callback(null, repo.ghPagesURL + presentationName);
       }).fail(function(err){
