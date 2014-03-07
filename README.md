@@ -29,10 +29,13 @@ Developer info
 * keep audio names and overwrite previous files when publishing.
 
 Presentations are published to a github repo called "slide-shows".
-I'm hesitant to use a single repo:
-
-* it could make collaboration on individual presentations harder.
-* but it would enable pull requesting theme changes.
+I considered creating a repository for every presentation, but decided against it
+because it would cause difficulties when trying to import presentations,
+and it would provide a way for users with many presentations to keep them organized.
+However, this could make collaboration messy. 
+The slide-shows repo is forked from a single root repo (github.com/showandtell/slide-shows).
+This enables people to pull request updates to the base files.
+I'm not sure if this is good idea yet.
 
 ### Overview:
 
