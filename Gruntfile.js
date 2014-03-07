@@ -13,6 +13,7 @@ module.exports = function(grunt) {
             'assets/js/orderMatters/jszip/jszip-deflate.js',
             'assets/js/orderMatters/jszip/jszip-load.js',
             'assets/js/lib/**/*.js',
+            'build/templates.js',
             'assets/js/*.js',
             'assets/bootstrap/*.js'
           ],
@@ -30,12 +31,25 @@ module.exports = function(grunt) {
           'build/all.css' : 'app.scss'
         }
       }
+    },
+    handlebars: {
+      dist: {
+          options: {
+            processName: function(filename) {
+              return filename.split('/').slice(-1)[0].split('.')[0];
+            }
+          },
+          files: {
+            'build/templates.js' : [ 'assets/mediaWidgets/**/*.hbs', 'assets/templates/*']
+          }
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-traceur');
   grunt.loadNpmTasks('grunt-sass');
+  grunt.loadNpmTasks('grunt-contrib-handlebars');
 
-  grunt.registerTask('build', ['sass', 'traceur']);
+  grunt.registerTask('build', ['sass', 'handlebars', 'traceur']);
 
 };

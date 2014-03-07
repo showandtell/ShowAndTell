@@ -1,4 +1,4 @@
-var _, schema, Handlebars, Backbone, mediaWidgets, exporters, importers;
+var _, schema, Handlebars, Backbone, mediaWidgets, exporters, importers, JST;
 
 var viewSchema;
 //Make it correspond to a directory stucture so images can be saved to folders.
@@ -28,8 +28,6 @@ var currentCard = deck.get('cards')[0];
 
 var initializeUI = function () {
 
-var cardStubTemplate = Handlebars.compile($('#card-stub-template').html());
-
 var renderCurrentCard = function(){
   if(!currentCard) {
     $('.card-container').hide();
@@ -44,7 +42,7 @@ var renderDeck = function(){
     card.idx = idx;
     card.isCurrent = (currentCard === card);
   });
-  $('.cards').html(deck.get('cards').map(cardStubTemplate).join(''));
+  $('.cards').html(deck.get('cards').map(JST.cardStub).join(''));
   
   _.defer(function(){
     if(deck.deckSortable) return;//window.deckSortable.destroy();
@@ -81,14 +79,9 @@ if("localStorage" in window) {
 
 viewSchema = _.map(schema, function(widget, idx){
   var currentView;
-  var templateString = $("#" + widget.type + "-template").html();
-  if(!templateString) {
-    console.log("missing template");
-    alert("Missing template");
-  }
   
   var WidgetView = Backbone.View.extend({
-    template : Handlebars.compile(templateString),
+    template : JST[widget.type],
     basicRender : function(){
       this.$el.html(this.template({
         name : this.name,

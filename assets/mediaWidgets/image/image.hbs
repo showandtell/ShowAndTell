@@ -1,0 +1,18 @@
+<h4 class="widget-head">{{name}}</h4>
+<span style="display:inline-block">
+    <label>Upload image file:</label>
+    <input class="uploadfile" type="file" multiple></input>
+    
+    <label>Download from URL:</label>
+    <input class="url"></input>
+</span>
+
+<hr>
+<div id="img-error"></div>
+
+<div class="image-out">
+    {{#if value}}
+        <img src="{{value.dataURL}}" alt="{{value.name}}"></img>
+        <a class="clear btn">clear</a>
+    {{/if}}
+</div>
