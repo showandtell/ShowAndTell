@@ -55,8 +55,8 @@ var makeRepoPromise = (function(){
                       "can this application create one?")) {
                 return def.reject("Could not create repo: User rejection");
               }
-              //fork the repo form me.
-              github.getRepo("nathanathan", repoName).fork(function(err){
+              //fork the master slide-show repo.
+              github.getRepo("showandtell", repoName).fork(function(err){
                 repo = github.getRepo(username, repoName);
                 repo.show(function(err, info){ 
                   if(err) {

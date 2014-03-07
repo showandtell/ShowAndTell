@@ -4,9 +4,8 @@
     <meta charset="utf-8">
     <title>Show &amp; Tell</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="assets/bootstrap/bootstrap.min.css">
-    <link href="app.css" rel="stylesheet">
+    <link href="assets/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="build/all.css" rel="stylesheet">
   </head>
 
     <body>
@@ -139,7 +138,7 @@
 var schema = [{
     name : 'text',
     type : 'text'
-},{
+}, {
     name : 'audio',
     hint : 'This currently only works in Desktop Chrome and the latest Firefox.',
     type : 'audio'
@@ -201,8 +200,8 @@ $(document).ready(initializeUI);
       {{#if wavConverterLoading}}
         <h3>Loading Wav converter...</h3>
       {{else}}
-        <p>To use the audio recorder you need to load a 20 Megabyte script
-          that coverts your recordings to a more copressed format.
+        <p>To use the audio recorder you need to load a 20 megabyte script
+          that coverts your recordings to a smaller format.
         </p>
         <a class="btn btn-default enable-audio">Okay, do it!</a>
         &nbsp;&nbsp;<input type="checkbox" id="rememberWavConverter" /> Remember my decision

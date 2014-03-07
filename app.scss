@@ -1,0 +1,353 @@
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  -o-border-radius: $radius;
+  border-radius: $radius;
+}
+@mixin keyframes ($name) {
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+
+  @-o-keyframes #{$name} {
+    @content;
+  }
+
+  @keyframes #{$name} {
+    @content;
+  }
+}
+@mixin animation ($animation, $duration, $timingFunction) {
+  /* fill-mode make the animation play only once */
+  -webkit-animation-duration: $duration;
+  -webkit-animation-name: $animation;
+  -webkit-animation-timing-function: $timingFunction;
+  -webkit-animation-fill-mode: forwards;
+
+  -moz-animation-duration: $duration;
+  -moz-animation-name: $animation;
+  -moz-animation-timing-function: $timingFunction;
+  -moz-animation-fill-mode: forwards;
+
+  -o-animation-duration: $duration;
+  -o-animation-name: $animation;
+  -o-animation-timing-function: $timingFunction;
+  -o-animation-fill-mode: forwards;
+
+  animation-duration: $duration;
+  animation-name: $animation;
+  animation-timing-function: $timingFunction;
+  animation-fill-mode: forwards;
+}
+@mixin box-shadow ($props) {
+  box-shadow: $props;
+  -webkit-box-shadow: $props;
+}
+@mixin linear-gradient ($start, $end) {
+  background: $start;
+  background: -moz-linear-gradient($start, $end);
+  background: -webkit-linear-gradient($start, $end);
+  background: -o-linear-gradient($start, $end);
+}
+body {
+  margin: 0;
+  padding-top: 0;
+  background-color: #F4F4F4;
+}
+.invisible {
+  visibility: hidden;
+}
+/* Exporter menu */
+.show-and-tell-dl {
+  margin: 0;
+}
+.show-and-tell-dl > dt {
+  max-width: 140px;
+  padding-top: 7px;
+}
+.show-and-tell-dl > dd {
+  padding-bottom: 7px;
+  padding-top: 7px;
+  border-bottom: 1px solid lightgray;
+}
+.show-and-tell-dl > dd:last-of-type {
+  border-bottom: 0;
+}
+
+.modal-body {
+	max-height: none;
+}
+.modal-content{
+  @include border-radius(0);
+}
+#drop {
+  background-color: white;
+  border:2px dashed #bbb;
+  @include border-radius(0);
+  padding:25px;
+  text-align:center;
+	font:20pt bold;
+  color:#bbb
+}
+#out {
+  clear: both;
+  height: 500px;
+  width: 100%;
+}
+#save {
+  float: right;
+  font-size: 15pt;
+  margin-top: 15px;
+  font-family: "Times New Roman"; 
+}
+#errors p {
+  background-color: pink;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding: .5em;
+}
+#download div {
+  background-color: lightgreen;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  padding: .5em;
+}
+
+.help {
+  float: right;
+}
+.ss-title {
+  margin: 4px;
+  padding: 2px;
+}
+#ss-title-input {
+  width: 100%;
+  padding: 2px;
+}
+.deck {
+  position: fixed;
+  width: 300px;
+  z-index: 1002;
+  top:0;
+  bottom:0;
+  left: 0;
+  background: #F4F4F4;
+  overflow-y: auto;
+  @include box-shadow(2px 0px 1px 1px rgba(0, 0, 0, .2));
+  @include linear-gradient(rgba(255,255,255,1), rgba(240,240,240,1));
+}
+.deck.no-show {
+  left: -390px;
+}
+.my-navbar {
+  z-index: 1001;
+  position: fixed;
+  width: 100%;
+  border: 0;
+  @include border-radius(0);
+  @include linear-gradient(rgba(255,255,255,1), rgba(255,255,255,0));
+}
+.card-label {
+  background-color: white;
+  margin: 2px auto;
+  position: relative;
+  height: 50px;
+  @include box-shadow(1px 1px 1px 0px rgba(0, 0, 0, .5));
+}
+.label-text {
+  height: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 3px;
+}
+.label-handle {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  width: 42px;
+  bottom: 4px;
+  background-color: #CEE1F1;
+  opacity: .75;
+}
+.card-label.current > .label-handle {
+  background-color: #73BAE9;
+}
+.card-label > img {
+  opacity: 0.4;
+  position: absolute;
+  top: -50px;
+  width: 100%;
+}
+
+.my-navbar-content {
+  margin: 4px;
+  margin-left: 4px;
+  height: 42px;
+  @include box-shadow(1px 1px 1px 0px rgba(0, 0, 0, .5));
+}
+.my-navbar-content, .panel-menu {
+  background: #73BAE9;
+}
+#my-toggle {
+  margin: 5px;
+  position: relative;
+  float: right;
+  padding: 7px;
+  background-color: transparent;
+  border: 1px solid transparent;
+}
+#my-toggle .icon-bar {
+  background-color: white;
+  display: block;
+  width: 22px;
+  height: 2px;
+  @include border-radius(0);
+  margin-bottom: 4px;
+}
+.navbar-brand {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+}
+.aside {
+  font-size: .7em;
+}
+.my-well {
+  min-height: 20px;
+  padding: 19px;
+  background-color: #AAD1F5;
+  margin:0 5px;
+  @include box-shadow(inset 0px -2px 2px 1px rgba(0, 0, 0, 0.14));
+}
+.panel-menu {
+  margin: 4px;
+  margin-bottom: 8px;
+  padding: 5px 20px;
+}
+.panel-menu > .btn {
+  color: white;
+}
+
+.card-container {
+  padding-top: 54px;
+  margin-left: 0;
+}
+.card {
+  background-color: white;
+  color: white;
+  @include box-shadow(1px 1px 1px 1px rgba(0, 0, 0, .4));
+  padding: 3px;
+  margin: auto;
+  margin-bottom: 1em;
+  max-width: 600px;
+}
+.widget {
+  padding: 1em;
+  padding-top: .1em;
+  padding-bottom: 1em;
+  margin: 2px;
+}
+.widget-0 {
+  background-color: #6D93CB;
+}
+.widget-1 {
+  background-color: #4AC2C2;
+}
+.widget-2 {
+  background-color: #C389F0;
+}
+.widget hr {
+  max-width: 300px;
+}
+.widget img {
+  max-width: 300px;
+  margin: auto;
+  display: block;
+}
+.widget textarea {
+  width: 99%;
+  height:100px;
+  resize: vertical;
+}
+.recording:before {
+  font-size: 1.5em;
+  margin-right: 5px;
+  color: red;
+  content: "●";
+}
+.show-and-tell-audio-btn {
+  margin-left: 0;
+  margin-right: 10px;
+  width: 80px;
+  font-weight: bold;
+  border: 1px solid white;
+}
+.clear {
+  border: 1px solid white;
+  color: white;
+  display: block;
+  margin: 5px auto;
+  width: 80px;
+}
+.copyright {
+  font-size: .8em;
+  margin-top: 1em;
+  color: gray;
+}
+.copyright a {
+  color: gray;
+  text-decoration: underline;
+}
+.app-title {
+  padding: 10px;
+  margin: 0;
+  color: white;
+  height: 42px;
+  padding-left: 38px;
+}
+.loading {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 0; right: 0;
+  color: white;
+  font-size: 80px;
+  text-align: center;
+  background-color: black;
+  opacity: 0.5;
+  z-index: 1100;
+}
+.links {
+  text-align: center;
+}
+.card-animation {
+  -webkit-transform-origin-x: -500px;
+  @include animation(slide, 1s, ease-in-out)
+}
+@include keyframes(flip) {
+  from {
+    -webkit-transform: perspective(800px) rotateX(0deg);
+  }
+  to {
+    -webkit-transform: perspective(800px) rotateX(360deg);
+  }
+}
+
+@media screen and (min-width:800px) {
+  .card-container {
+    margin-left: 300px;
+  }
+  .my-navbar-content {
+    margin-left: 306px;
+  }
+  .deck.no-show {
+    left: 0;
+  }
+  .toggle-panel#my-toggle {
+    visibility: hidden;
+  }
+}

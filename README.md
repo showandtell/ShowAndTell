@@ -1,18 +1,21 @@
 Show & Tell
 --------------------------------------------------------------------------------
-Multimedia Card Maker 
-The primary use case is to quickly create voice over slide shows.
-I also plan to reuse much of the code to make Anki flashcards (see anki.html).
+
+Show & Tell is a tool designed for quickly creating slide shows with voice overs.
 
 Features
 --------
 * Add images from files and urls
-* Record voice overs
+* Record voice audio clips using the new getUserMedia API
 * Export to reveal.js slideshows
+* Publish presentations online using github pages
 
-TODO:
------
+Developer info
+--------------------------------------------------------------------------------
 
+### TODO
+
+* track down ff bug
 * ~~cant click cards on mobile~~
 * ~~bug changing slides during ogg processing~~
 * ~~Delete cards, move cards, immediate update of deck, selection icon.~~
@@ -23,7 +26,6 @@ TODO:
 * ~~Covert wave audio files to something that plays everywhere~~
 * Make a presentation about the features
 * Try to encapsulate code for each media widget. Use polymer web components??
-* Is recording possible in windows firefox?
 * keep audio names and overwrite previous files when publishing.
 
 Presentations are published to a github repo called "slide-shows".
@@ -31,9 +33,6 @@ I'm hesitant to use a single repo:
 
 * it could make collaboration on individual presentations harder.
 * but it would enable pull requesting theme changes.
-
-Dev info
---------------------------------------------------------------------------------
 
 ### Overview:
 

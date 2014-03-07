@@ -11422,7 +11422,7 @@ var makeRepoPromise = (function() {
               if (!confirm("You don't have a slide-show repository,\n" + "can this application create one?")) {
                 return def.reject("Could not create repo: User rejection");
               }
-              github.getRepo("nathanathan", repoName).fork(function(err) {
+              github.getRepo("showandtell", repoName).fork(function(err) {
                 repo = github.getRepo(username, repoName);
                 repo.show(function(err, info) {
                   if (err) {

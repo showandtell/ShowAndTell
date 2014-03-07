@@ -18,11 +18,24 @@ module.exports = function(grunt) {
           ],
         }
       }
+    },
+    sass: {
+      dist: {
+        options: {
+          includePaths: [
+            'assets/bootstrap/'
+          ]
+        },
+        files: {
+          'build/all.css' : 'app.scss'
+        }
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-traceur');
+  grunt.loadNpmTasks('grunt-sass');
 
-  grunt.registerTask('build', ['traceur']);
+  grunt.registerTask('build', ['sass', 'traceur']);
 
 };
