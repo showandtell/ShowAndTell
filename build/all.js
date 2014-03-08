@@ -8589,6 +8589,14 @@ if (typeof exports !== 'undefined') {
           });
         });
       };
+      this.readBase64 = function(branch, path, cb) {
+        that.getSha(branch, path, function(err, sha) {
+          if (!sha) return cb("not found", null);
+          $.get(API_URL + repoPath + "/git/blobs/" + sha).fail(cb).done(function(resp) {
+            cb(null, resp.content, sha);
+          });
+        });
+      };
       this.remove = function(branch, path, cb) {
         updateTree(branch, function(err, latestCommit) {
           that.getTree(latestCommit + "?recursive=true", function(err, tree) {
@@ -11919,12 +11927,40 @@ this["JST"]["choosePresentation"] = Handlebars.template(function(Handlebars, dep
   this.compilerInfo = [4, '>= 1.0.0'];
   helpers = this.merge(helpers, Handlebars.helpers);
   data = data || {};
-  var buffer = "", stack1, self = this;
+  var buffer = "", stack1, functionType = "function", escapeExpression = this.escapeExpression, self = this;
   function program1(depth0, data) {
-    return "\n  <div>\n  \n  </div>\n";
+    var buffer = "", stack1, helper;
+    buffer += "\n        <a class=\"btn btn-primary btn-lg btn-block import-presentation\" data-path=\"";
+    if (helper = helpers.path) {
+      stack1 = helper.call(depth0, {
+        hash: {},
+        data: data
+      });
+    } else {
+      helper = (depth0 && depth0.path);
+      stack1 = typeof helper === functionType ? helper.call(depth0, {
+        hash: {},
+        data: data
+      }): helper;
+    }
+    buffer += escapeExpression(stack1) + "\">";
+    if (helper = helpers.path) {
+      stack1 = helper.call(depth0, {
+        hash: {},
+        data: data
+      });
+    } else {
+      helper = (depth0 && depth0.path);
+      stack1 = typeof helper === functionType ? helper.call(depth0, {
+        hash: {},
+        data: data
+      }): helper;
+    }
+    buffer += escapeExpression(stack1) + "</a>\n      ";
+    return buffer;
   }
-  buffer += "<h3>Choose a slide show to edit</h3>\n";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.slideShow), {
+  buffer += "<div class=\"modal fade\" id=\"generalModal\" tabindex=\"-1\" role=\"dialog\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n        <h4 class=\"modal-title\">Choose a slide show to edit</h4>\n      </div>\n      <div class=\"modal-body\">\n      ";
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.presentations), {
     hash: {},
     inverse: self.noop,
     fn: self.program(1, program1, data),
@@ -11933,9 +11969,10 @@ this["JST"]["choosePresentation"] = Handlebars.template(function(Handlebars, dep
   if (stack1 || stack1 === 0) {
     buffer += stack1;
   }
+  buffer += "\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->";
   return buffer;
 });
-var _, schema, Handlebars, Backbone, mediaWidgets, exporters, importers, JST;
+var _, schema, Backbone, mediaWidgets, exporters, importers, JST;
 var viewSchema;
 var DeckModel = Backbone.Model.extend({
   addCard: function() {
@@ -11994,6 +12031,7 @@ var initializeUI = function() {
     });
   };
   if ("localStorage"in window) {
+    if (!localStorage.getItem("returnUser")) {}
     if (localStorage.getItem("downloadWavConverter") === "true") {
       window.wavConverterLoading = true;
       worker = createWebWorker();
@@ -12107,18 +12145,51 @@ var initializeUI = function() {
   $(document).on('change', '.uploadzip', function(evt) {
     $('.uploadzip-status').empty();
     var files = evt.target.files;
-    importers.zip(files[0], function(err, deckJSON) {
-      if (err) {
-        console.log(err);
-        return;
-      }
+    importers.zip(files[0]).fail(function(err) {
+      $('.uploadzip-status').text("Error! See console for details.");
+      console.log(err);
+    }).done(function(deckJSON) {
       deck.set('cards', deckJSON.cards);
       deck.set('name', deckJSON.name);
       $('.uploadzip-status').text("Imported!");
+      currentCard = deck.get('cards')[0];
       renderCurrentCard();
     });
     $('.uploadzip').val("");
     $('.uploadzip-status').text("importing...");
+  });
+  $(document).on('click', '.import-github', function(evt) {
+    $('.modal').modal('hide');
+    makeRepoPromise().fail(function(message) {
+      alert("Couldn't get repo:\n" + message);
+    }).done(function(repo) {
+      repo.getTree('gh-pages', function(err, tree) {
+        if (err) {
+          alert("Couldn't get tree");
+          return;
+        }
+        $(JST.choosePresentation({presentations: _.filter(tree, function(pres) {
+            return pres.type === 'tree' && pres.path !== 'reveal.js';
+          })})).modal();
+        $('.modal-backdrop').slice(1).remove();
+      });
+    });
+  });
+  $(document).on('click', '.import-presentation', function(evt) {
+    makeRepoPromise().fail(function(message) {
+      alert("Couldn't get repo:\n" + message);
+    }).done(function(repo) {
+      importers.github(repo, $(evt.currentTarget).data('path')).fail(function(err) {
+        alert("Error! See console for details.");
+        console.log(err);
+      }).done(function(deckJSON) {
+        deck.set('cards', deckJSON.cards);
+        deck.set('name', deckJSON.name);
+        currentCard = deck.get('cards')[0];
+        renderCurrentCard();
+        alert("Imported!");
+      });
+    });
   });
   $(document).one('click', '.help', function(evt) {
     $('.help-body').html('<iframe src="tutorial/index.html" seamless="seamless" style="width:100%;height:340px"></iframe>');
@@ -12170,8 +12241,7 @@ var makeRepoPromise = (function() {
         repo.show(function(err, info) {
           if (err) {
             if (err.error === 401) {
-              alert("Incorrect username or password.");
-              makeRepoPromise().done(def.resolve).fail(def.reject);
+              def.reject("Incorrect username or password.");
             } else {
               if (!confirm("You don't have a slide-show repository,\n" + "can this application create one?")) {
                 return def.reject("Could not create repo: User rejection");
@@ -12180,8 +12250,7 @@ var makeRepoPromise = (function() {
                 repo = github.getRepo(username, repoName);
                 repo.show(function(err, info) {
                   if (err) {
-                    console.log("Couldn't create repo: Possible fork failure.");
-                    def.reject(err);
+                    def.reject("Could not access the newly created repo, we might need to wait a minute...");
                   } else {
                     repo.ghPagesURL = 'http://' + username + ".github.com/" + repoName + '/';
                     def.resolve(repo);
@@ -12191,12 +12260,11 @@ var makeRepoPromise = (function() {
             }
           } else {
             repo.ghPagesURL = 'http://' + username + ".github.com/" + repoName + '/';
-            repo = repo;
             def.resolve(repo);
           }
         });
       }
-    });
+    }).promise();
   };
 }());
 var exporters = {
@@ -12263,21 +12331,23 @@ var exporters = {
     });
   }
 };
-var _, JSZip;
+var _, JSZip, base64ArrayBuffer;
 var getExt = function(path) {
   return path.split('.').unshift();
 };
-var importers = {zip: function(file, callback) {
+var importers = {
+  zip: function(file) {
+    var imported = $.Deferred();
     var loadExternalAssets = function(zip, deck) {
       var assetsLoaded = $.Deferred();
-      assetsLoaded.resolve();
+      assetsLoaded.resolve(deck);
       _.each(deck.cards, function(card) {
         if (card.image && card.image.path) {
           assetsLoaded = $.when(assetsLoaded, $.Deferred(function(thisDeferred) {
             _.defer(function() {
               var arrayBuffer = zip.file('slideshow/' + card.image.path).asArrayBuffer();
               card.image.dataURL = 'data:image/' + getExt(card.image.path) + ';base64,' + base64ArrayBuffer.encode(arrayBuffer);
-              thisDeferred.resolve();
+              thisDeferred.resolve(deck);
             });
           }));
         }
@@ -12286,14 +12356,12 @@ var importers = {zip: function(file, callback) {
             _.defer(function() {
               var arrayBuffer = zip.file('slideshow/' + card.audio.path).asArrayBuffer();
               card.audio.dataURL = 'data:audio/' + getExt(card.audio.path) + ';base64,' + base64ArrayBuffer.encode(arrayBuffer);
-              thisDeferred.resolve();
+              thisDeferred.resolve(deck);
             });
           }));
         }
       });
-      $.when(assetsLoaded).then(function() {
-        callback(null, deck);
-      });
+      return assetsLoaded;
     };
     var reader = new FileReader();
     reader.onload = function(readEvent) {
@@ -12302,16 +12370,53 @@ var importers = {zip: function(file, callback) {
       console.log(zip);
       window.zip = zip;
       if (oldFormat) {
-        callback(null, {
+        imported.resolve({
           name: readEvent.target.name || "slideshow",
           cards: JSON.parse(zip.file('deck.json').asText())
         });
       } else {
-        loadExternalAssets(zip, JSON.parse(zip.file('slideshow/deck.js').asText().slice(9)));
+        loadExternalAssets(zip, JSON.parse(zip.file('slideshow/deck.js').asText().slice(9))).done(imported.resolve).fail(imported.reject);
       }
     };
     reader.readAsArrayBuffer(file);
-  }};
+    return imported.promise();
+  },
+  github: function(repo, slideShowName) {
+    var imported = $.Deferred();
+    var loadExternalAssets = function(repo, deck) {
+      var assetsLoaded = $.Deferred();
+      assetsLoaded.resolve(deck);
+      _.each(deck.cards, function(card) {
+        if (card.image && card.image.path) {
+          assetsLoaded = $.when(assetsLoaded, $.Deferred(function(thisDeferred) {
+            repo.readBase64('gh-pages', slideShowName + '/' + card.image.path, function(err, data) {
+              console.log(data);
+              if (err) return thisDeferred.reject(err);
+              card.image.dataURL = 'data:image/' + getExt(card.image.path) + ';base64,' + data;
+              thisDeferred.resolve(deck);
+            });
+          }));
+        }
+        if (card.audio && card.audio.path) {
+          assetsLoaded = $.when(assetsLoaded, $.Deferred(function(thisDeferred) {
+            repo.readBase64('gh-pages', slideShowName + '/' + card.audio.path, function(err, data) {
+              console.log(data);
+              if (err) return thisDeferred.reject(err);
+              card.audio.dataURL = 'data:audio/' + getExt(card.audio.path) + ';base64,' + data;
+              thisDeferred.resolve(deck);
+            });
+          }));
+        }
+      });
+      return assetsLoaded;
+    };
+    repo.read('gh-pages', slideShowName + '/deck.js', function(err, data) {
+      if (err) return imported.reject(err);
+      loadExternalAssets(repo, JSON.parse(data.slice(9))).done(imported.resolve).fail(imported.reject);
+    });
+    return imported.promise();
+  }
+};
 var _, RecordRTC, base64ArrayBuffer, createWebWorker, convertStreams;
 var blobToDataURL = function(blob, callback) {
   var reader = new FileReader();
@@ -12428,8 +12533,11 @@ var mediaWidgets = {
             that.value.set(value);
             done();
             that.render();
-            convertStreams(recordRTC.getBlob(), function(err, oggblob) {
+            var blob = recordRTC.getBlob();
+            if (!blob) throw Error("Missing recordRTC blob.");
+            convertStreams(blob, function(err, oggblob) {
               blobToDataURL(oggblob, function(err, dataURL) {
+                if (!dataURL) throw Error("Missing dataURL");
                 _.extend(value, {
                   name: 'rec' + Number(startTime) + '.' + type,
                   startTime: startTime,

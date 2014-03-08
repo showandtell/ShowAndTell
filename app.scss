@@ -324,16 +324,17 @@ body {
 .links {
   text-align: center;
 }
+
 .card-animation {
   -webkit-transform-origin-x: -500px;
   @include animation(slide, 1s, ease-in-out)
 }
-@include keyframes(flip) {
+@include keyframes(slide) {
   from {
-    -webkit-transform: perspective(800px) rotateX(0deg);
+    -webkit-transform: perspective(800px) rotateZ(0deg);;
   }
   to {
-    -webkit-transform: perspective(800px) rotateX(360deg);
+    -webkit-transform: perspective(800px) rotateZ(360deg);
   }
 }
 

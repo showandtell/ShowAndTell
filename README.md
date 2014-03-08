@@ -8,25 +8,19 @@ Features
 * Add images from files and urls
 * Record voice audio clips using the new getUserMedia API
 * Export to reveal.js slideshows
-* Publish presentations online using github pages
+* Publish/save presentations online using github pages
 
 Developer info
 --------------------------------------------------------------------------------
 
 ### TODO
 
-* track down ff bug
-* ~~cant click cards on mobile~~
-* ~~bug changing slides during ogg processing~~
-* ~~Delete cards, move cards, immediate update of deck, selection icon.~~
-* ~~Pressing stop before the recording starts~~
-* ~~Ability name presentation when exporting to gh~~
-* import from gh
 * implement gh oauth
-* ~~Covert wave audio files to something that plays everywhere~~
-* Make a presentation about the features
-* Try to encapsulate code for each media widget. Use polymer web components??
+* Make a new version of the "help" presentation
+* Try to encapsulate code for each media widget. Use polymer web components?
 * keep audio names and overwrite previous files when publishing.
+
+## Github integraton
 
 Presentations are published to a github repo called "slide-shows".
 I considered creating a repository for every presentation, but decided against it
@@ -35,7 +29,8 @@ and it would provide a way for users with many presentations to keep them organi
 However, this could make collaboration messy. 
 The slide-shows repo is forked from a single root repo (github.com/showandtell/slide-shows).
 This enables people to pull request updates to the base files.
-I'm not sure if this is good idea yet.
+I'm not sure if this is good idea yet. Forks have limitations,
+you can only have one, and you can't make them private.
 
 ### Overview:
 
@@ -47,6 +42,10 @@ I plan to eventually make this tool easy to extend with new widgets and configur
 
 Exporters take the deck object array and emit something.
 I want them to also be modular.
+
+## Firefox with RecordRTC
+
+There is a transcoding bug: https://github.com/muaz-khan/WebRTC-Experiment/issues/173
 
 ## Mobile 
 

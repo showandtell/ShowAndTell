@@ -129,8 +129,15 @@ var mediaWidgets = {
                   that.value.set(value);
                   done();
                   that.render();
-                  convertStreams(recordRTC.getBlob(), function(err, oggblob){
-                    blobToDataURL(oggblob, function(err, dataURL){
+                  var blob = recordRTC.getBlob();
+                  if(!blob) throw Error("Missing recordRTC blob.");
+                  convertStreams(blob, function(err, vorbisBlob){
+                    if(err) throw err;
+                    if(vorbisBlob.size === 0) {
+                      console.log("Empty blob");
+                      console.log(vorbisBlob);
+                    }
+                    blobToDataURL(vorbisBlob, function(err, dataURL){
                       _.extend(value, {
                         name : 'rec' + Number(startTime) + '.' + type,
                         startTime : startTime,

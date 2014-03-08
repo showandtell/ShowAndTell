@@ -522,6 +522,17 @@
         });
       };
 
+      this.readBase64 = function(branch, path, cb) {
+        that.getSha(branch, path, function(err, sha) {
+          if (!sha) return cb("not found", null);
+          $.get(API_URL + repoPath + "/git/blobs/" + sha)
+            .fail(cb)
+            .done(function(resp){
+              cb(null, resp.content, sha);
+            });
+        });
+      };
+
       // Remove a file from the tree
       // -------
 

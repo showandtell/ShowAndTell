@@ -313,33 +313,33 @@ body {
   animation-timing-function: ease-in-out;
   animation-fill-mode: forwards; }
 
-@-webkit-keyframes flip {
+@-webkit-keyframes slide {
   from {
-    -webkit-transform: perspective(800px) rotateX(0deg); }
+    -webkit-transform: perspective(800px) rotateZ(0deg); }
 
   to {
-    -webkit-transform: perspective(800px) rotateX(360deg); } }
+    -webkit-transform: perspective(800px) rotateZ(360deg); } }
 
-@-moz-keyframes flip {
+@-moz-keyframes slide {
   from {
-    -webkit-transform: perspective(800px) rotateX(0deg); }
+    -webkit-transform: perspective(800px) rotateZ(0deg); }
 
   to {
-    -webkit-transform: perspective(800px) rotateX(360deg); } }
+    -webkit-transform: perspective(800px) rotateZ(360deg); } }
 
-@-o-keyframes flip {
+@-o-keyframes slide {
   from {
-    -webkit-transform: perspective(800px) rotateX(0deg); }
+    -webkit-transform: perspective(800px) rotateZ(0deg); }
 
   to {
-    -webkit-transform: perspective(800px) rotateX(360deg); } }
+    -webkit-transform: perspective(800px) rotateZ(360deg); } }
 
-@keyframes flip {
+@keyframes slide {
   from {
-    -webkit-transform: perspective(800px) rotateX(0deg); }
+    -webkit-transform: perspective(800px) rotateZ(0deg); }
 
   to {
-    -webkit-transform: perspective(800px) rotateX(360deg); } }
+    -webkit-transform: perspective(800px) rotateZ(360deg); } }
 
 @media screen and (min-width: 800px) {
   .card-container {

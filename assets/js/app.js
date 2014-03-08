@@ -1,4 +1,4 @@
-var _, schema, Handlebars, Backbone, mediaWidgets, exporters, importers, JST;
+var _, schema, Backbone, mediaWidgets, exporters, importers, JST;
 
 var viewSchema;
 //Make it correspond to a directory stucture so images can be saved to folders.
@@ -67,8 +67,13 @@ var renderDeck = function(){
 };
 
 if("localStorage" in window) {
+  if(!localStorage.getItem("returnUser")) {
+    //TODO: Show help slide-show
+    //localStorage.setItem("returnUser", true);
+  }
   if(localStorage.getItem("downloadWavConverter") === "true") {
     window.wavConverterLoading = true;
+    //TODO: Better encapsulation for wav converter
     worker = createWebWorker();
     worker.onready = function(event) {
       window.wavConverterLoaded = true;
@@ -192,19 +197,63 @@ $(document).on('click', '.export-zip', function(evt) {
 $(document).on('change', '.uploadzip', function(evt) {
   $('.uploadzip-status').empty();
   var files = evt.target.files;
-  importers.zip(files[0], function(err, deckJSON){
-    if(err) {
+  importers.zip(files[0])
+    .fail(function(err){
+      $('.uploadzip-status').text("Error! See console for details.");
       console.log(err);
-      return;
-    }
-    deck.set('cards', deckJSON.cards);
-    deck.set('name', deckJSON.name);
-    $('.uploadzip-status').text("Imported!");
-    renderCurrentCard();
-    //Clear the file input so the form can be updated:
-  });
+    })
+    .done(function(deckJSON){
+      deck.set('cards', deckJSON.cards);
+      deck.set('name', deckJSON.name);
+      $('.uploadzip-status').text("Imported!");
+      currentCard = deck.get('cards')[0];
+      renderCurrentCard();
+    });
+  //Clear the file input so the form can be updated:
   $('.uploadzip').val("");
   $('.uploadzip-status').text("importing...");
+});
+$(document).on('click', '.import-github', function(evt) {
+  $('.modal').modal('hide');
+  makeRepoPromise()
+    .fail(function(message){
+      alert("Couldn't get repo:\n" + message);
+    })
+    .done(function(repo){
+      repo.getTree('gh-pages', function(err, tree){
+      if(err) {
+        alert("Couldn't get tree");
+        return;
+      }
+      $(JST.choosePresentation({
+        presentations : _.filter(tree, function(pres){
+          return pres.type === 'tree' && pres.path !== 'reveal.js';
+        })
+      })).modal();
+      //There seems a bootstrap bug where an additional backdrop is created.
+      $('.modal-backdrop').slice(1).remove();
+    });
+  });
+});
+$(document).on('click', '.import-presentation', function(evt) {
+  makeRepoPromise()
+   .fail(function(message){
+     alert("Couldn't get repo:\n" + message);
+   })
+   .done(function(repo){
+    importers.github(repo, $(evt.currentTarget).data('path'))
+    .fail(function(err){
+      alert("Error! See console for details.");
+      console.log(err);
+    })
+    .done(function(deckJSON){
+      deck.set('cards', deckJSON.cards);
+      deck.set('name', deckJSON.name);
+      currentCard = deck.get('cards')[0];
+      renderCurrentCard();
+      alert("Imported!");
+    });
+   });
 });
 $(document).one('click', '.help', function(evt) {
   //TODO: Remove when closed for 60 seconds to conserve memory

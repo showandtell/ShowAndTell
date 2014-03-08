@@ -47,8 +47,7 @@ var makeRepoPromise = (function(){
         repo.show(function(err, info){
           if(err) {
             if(err.error === 401) {
-              alert("Incorrect username or password.");
-              makeRepoPromise().done(def.resolve).fail(def.reject);
+              def.reject("Incorrect username or password.");
             } else {
               //repo doesn't exist
               if(!confirm("You don't have a slide-show repository,\n" + 
@@ -60,8 +59,7 @@ var makeRepoPromise = (function(){
                 repo = github.getRepo(username, repoName);
                 repo.show(function(err, info){ 
                   if(err) {
-                    console.log("Couldn't create repo: Possible fork failure.");
-                    def.reject(err);
+                    def.reject("Could not access the newly created repo, we might need to wait a minute...");
                   } else {
                     repo.ghPagesURL = 'http://' + username +
                       ".github.com/" + repoName + '/';
@@ -71,15 +69,14 @@ var makeRepoPromise = (function(){
               });
             }
           } else {
-            //TODO: Should verify the repo is valid
             repo.ghPagesURL = 'http://' + username +
                       ".github.com/" + repoName + '/';
-            repo = repo;
+            //TODO: Verify that the repo has a require.js folder
             def.resolve(repo);
           }
         });
       }
-    });
+    }).promise();
   };
 }());
 

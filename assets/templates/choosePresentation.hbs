@@ -1,6 +1,15 @@
-<h3>Choose a slide show to edit</h3>
-{{#each slideShow}}
-  <div>
-  
-  </div>
-{{/each}}
+<div class="modal fade" id="generalModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Choose a slide show to edit</h4>
+      </div>
+      <div class="modal-body">
+      {{#each presentations}}
+        <a class="btn btn-primary btn-lg btn-block import-presentation" data-path="{{path}}">{{path}}</a>
+      {{/each}}
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
