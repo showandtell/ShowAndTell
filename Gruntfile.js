@@ -43,13 +43,28 @@ module.exports = function(grunt) {
             'build/templates.js' : [ 'assets/mediaWidgets/**/*.hbs', 'assets/templates/*']
           }
       }
+    },
+    shell: {
+      zip: {
+        command: [
+          'git clone https://github.com/showandtell/slide-shows.git tmp',
+          'cd tmp',
+          'zip reveal.js.zip -r reveal.js',
+          'cd ..',
+          'mv tmp/reveal.js.zip reveal.js.zip',
+          'rm -r tmp'
+        ].join('&&')
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-traceur');
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-handlebars');
+  grunt.loadNpmTasks('grunt-traceur');
+  grunt.loadNpmTasks('grunt-shell');
 
   grunt.registerTask('build', ['sass', 'handlebars', 'traceur']);
+  grunt.registerTask('zip', ['shell']);
 
 };

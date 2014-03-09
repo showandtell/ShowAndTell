@@ -84,7 +84,7 @@ if("localStorage" in window) {
 
 viewSchema = _.map(schema, function(widget, idx){
   var currentView;
-  
+  var isWindowsChrome = navigator.userAgent.match('Windows.*Chrome') ? true : false;
   var WidgetView = Backbone.View.extend({
     template : JST[widget.type],
     basicRender : function(){
@@ -92,7 +92,8 @@ viewSchema = _.map(schema, function(widget, idx){
         name : this.name,
         value : this.value.get(),
         wavConverterLoading : window.wavConverterLoading,
-        wavConverterLoaded : window.wavConverterLoaded
+        wavConverterLoaded : window.wavConverterLoaded,
+        audioCompatible : isWindowsChrome
       }));
       return this;
     },
@@ -190,7 +191,7 @@ $(document).on('click', '.export-zip', function(evt) {
   exporters.zip(deck, function(err, zipBlob){
     var $downloadBtn = $('<a class="btn btn-primary">Download<a>');
     $downloadBtn.attr('href', window.URL.createObjectURL(zipBlob));
-    $downloadBtn.attr('download', "presentation.zip");
+    $downloadBtn.attr('download', deck.get('name') + ".zip");
     $('#output').empty().append($downloadBtn);
   });
 });

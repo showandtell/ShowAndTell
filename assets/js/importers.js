@@ -30,13 +30,17 @@ var importers = {
           }));
         }
       });
-      return assetsLoaded;
+      return $.Deferred(function(d){
+        assetsLoaded.done(function(){
+          d.resolve(deck);
+        });
+        assetsLoaded.fail(d.reject);
+      });
     };
     var reader = new FileReader();
     reader.onload = function(readEvent) {
       var zip = new JSZip(readEvent.target.result, {base64 : false});
       var oldFormat = zip.file('deck.json');
-      console.log(zip); window.zip = zip;
       if(oldFormat) {
         imported.resolve({
           name : readEvent.target.name || "slideshow",
@@ -81,7 +85,12 @@ var importers = {
           }));
         }
       });
-      return assetsLoaded;
+      return $.Deferred(function(d){
+        assetsLoaded.done(function(){
+          d.resolve(deck);
+        });
+        assetsLoaded.fail(d.reject);
+      });
     };
 
     repo.read('gh-pages', slideShowName + '/deck.js', function(err, data) {
