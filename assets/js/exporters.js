@@ -139,14 +139,14 @@ var exporters = {
         if(card.text) {
           card.formattedText = mdConverter.makeHtml(card.text);
         }
-        if(card.image) {
+        if(card.image && card.image.dataURL) {
           card.image.path = 'media/' + card.image.name;
           writer.write(presDir + card.image.path, {
             content: stripPrefix(card.image.dataURL),
             encoding : 'base64'
           });
         }
-        if(card.audio) {
+        if(card.audio && card.audio.dataURL) {
           card.audio.path = 'media/' + card.audio.name;
           writer.write(presDir + card.audio.path, {
             content: stripPrefix(card.audio.dataURL),
