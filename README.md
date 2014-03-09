@@ -1,39 +1,37 @@
 Show & Tell
 --------------------------------------------------------------------------------
-Multimedia Card Maker 
-The primary use case is to quickly create voice over slide shows.
-I also plan to reuse much of the code to make Anki flashcards (see anki.html).
+
+Show & Tell is a tool designed for quickly creating slide shows with voice overs.
 
 Features
 --------
 * Add images from files and urls
-* Record voice overs
+* Record voice audio clips using the new getUserMedia API
 * Export to reveal.js slideshows
+* Publish/save presentations online using github pages
 
-TODO:
------
+Developer info
+--------------------------------------------------------------------------------
 
-* ~~cant click cards on mobile~~
-* ~~bug changing slides during ogg processing~~
-* ~~Delete cards, move cards, immediate update of deck, selection icon.~~
-* ~~Pressing stop before the recording starts~~
-* ~~Ability name presentation when exporting to gh~~
-* import from gh
+### TODO
+
 * implement gh oauth
-* ~~Covert wave audio files to something that plays everywhere~~
-* Make a presentation about the features
-* Try to encapsulate code for each media widget. Use polymer web components??
-* Is recording possible in windows firefox?
+* ~~Add recording warning to firefox users.~~
+* Make a new version of the "help" presentation (and launch on first use)
+* Try to encapsulate code for each media widget. Use polymer web components?
 * keep audio names and overwrite previous files when publishing.
 
+## Github integraton
+
 Presentations are published to a github repo called "slide-shows".
-I'm hesitant to use a single repo:
-
-* it could make collaboration on individual presentations harder.
-* but it would enable pull requesting theme changes.
-
-Dev info
---------------------------------------------------------------------------------
+I considered creating a repository for every presentation, but decided against it
+because it would cause difficulties when trying to import presentations,
+and it would provide a way for users with many presentations to keep them organized.
+However, this could make collaboration messy. 
+The slide-shows repo is forked from a single root repo (github.com/showandtell/slide-shows).
+This enables people to pull request updates to the base files.
+I'm not sure if this is good idea yet. Forks have limitations,
+you can only have one, and you can't make them private.
 
 ### Overview:
 
@@ -45,6 +43,10 @@ I plan to eventually make this tool easy to extend with new widgets and configur
 
 Exporters take the deck object array and emit something.
 I want them to also be modular.
+
+## Firefox with RecordRTC
+
+There is a transcoding bug: https://github.com/muaz-khan/WebRTC-Experiment/issues/173
 
 ## Mobile 
 

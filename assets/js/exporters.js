@@ -47,21 +47,19 @@ var makeRepoPromise = (function(){
         repo.show(function(err, info){
           if(err) {
             if(err.error === 401) {
-              alert("Incorrect username or password.");
-              makeRepoPromise().done(def.resolve).fail(def.reject);
+              def.reject("Incorrect username or password.");
             } else {
               //repo doesn't exist
               if(!confirm("You don't have a slide-show repository,\n" + 
                       "can this application create one?")) {
                 return def.reject("Could not create repo: User rejection");
               }
-              //fork the repo form me.
-              github.getRepo("nathanathan", repoName).fork(function(err){
+              //fork the master slide-show repo.
+              github.getRepo("showandtell", repoName).fork(function(err){
                 repo = github.getRepo(username, repoName);
                 repo.show(function(err, info){ 
                   if(err) {
-                    console.log("Couldn't create repo: Possible fork failure.");
-                    def.reject(err);
+                    def.reject("Could not access the newly created repo, we might need to wait a minute...");
                   } else {
                     repo.ghPagesURL = 'http://' + username +
                       ".github.com/" + repoName + '/';
@@ -71,15 +69,14 @@ var makeRepoPromise = (function(){
               });
             }
           } else {
-            //TODO: Should verify the repo is valid
             repo.ghPagesURL = 'http://' + username +
                       ".github.com/" + repoName + '/';
-            repo = repo;
+            //TODO: Verify that the repo has a require.js folder
             def.resolve(repo);
           }
         });
       }
-    });
+    }).promise();
   };
 }());
 
@@ -142,14 +139,14 @@ var exporters = {
         if(card.text) {
           card.formattedText = mdConverter.makeHtml(card.text);
         }
-        if(card.image) {
+        if(card.image && card.image.dataURL) {
           card.image.path = 'media/' + card.image.name;
           writer.write(presDir + card.image.path, {
             content: stripPrefix(card.image.dataURL),
             encoding : 'base64'
           });
         }
-        if(card.audio) {
+        if(card.audio && card.audio.dataURL) {
           card.audio.path = 'media/' + card.audio.name;
           writer.write(presDir + card.audio.path, {
             content: stripPrefix(card.audio.dataURL),
