@@ -5,19 +5,23 @@
   </p>
 {{/unless}}
 {{#if wavConverterLoaded}}
-  <a class="btn btn-info show-and-tell-audio-btn record">record</a>
+  <a class="btn btn-info show-and-tell-audio-btn record {{#if recording}}active{{/if}}">record</a>
   <a class="btn btn-info show-and-tell-audio-btn stop">stop</a>
-  <span class="recording" style="display:none;">Recording...</span>
+  {{#if recording}}
+    <span class="recording">Recording...</span>
+  {{/if}}
   <hr>
   <div>
   {{#if value}}
     {{#if value.converting}}
       <p>Converting from wav format...</p>
     {{else}}
-      <audio controls="" autoplay="" name="media">
+      {{#if value.dataURL}}
+        <audio controls="" autoplay="" name="media">
           <source src="{{value.dataURL}}" type="audio/webm; codecs=vorbis">
-      </audio>
-      <a class="clear transparent-btn btn">clear</a>
+        </audio>
+        <a class="clear transparent-btn btn">clear</a>
+      {{/if}}
     {{/if}}
   {{/if}}
   </div>
@@ -29,6 +33,6 @@
       that coverts your recordings to a smaller format.
     </p>
     <a class="btn btn-default enable-audio">Okay, do it!</a>
-    &nbsp;&nbsp;<input type="checkbox" id="rememberWavConverter" /> Remember my decision
+    &nbsp;&nbsp;<input type="checkbox" id="rememberWavConverter" checked /> Remember my decision
   {{/if}}
 {{/if}}

@@ -11670,11 +11670,31 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
   }
   function program3(depth0, data) {
     var buffer = "", stack1;
-    buffer += "\n  <a class=\"btn btn-info show-and-tell-audio-btn record\">record</a>\n  <a class=\"btn btn-info show-and-tell-audio-btn stop\">stop</a>\n  <span class=\"recording\" style=\"display:none;\">Recording...</span>\n  <hr>\n  <div>\n  ";
-    stack1 = helpers['if'].call(depth0, (depth0 && depth0.value), {
+    buffer += "\n  <a class=\"btn btn-info show-and-tell-audio-btn record ";
+    stack1 = helpers['if'].call(depth0, (depth0 && depth0.recording), {
       hash: {},
       inverse: self.noop,
       fn: self.program(4, program4, data),
+      data: data
+    });
+    if (stack1 || stack1 === 0) {
+      buffer += stack1;
+    }
+    buffer += "\">record</a>\n  <a class=\"btn btn-info show-and-tell-audio-btn stop\">stop</a>\n  ";
+    stack1 = helpers['if'].call(depth0, (depth0 && depth0.recording), {
+      hash: {},
+      inverse: self.noop,
+      fn: self.program(6, program6, data),
+      data: data
+    });
+    if (stack1 || stack1 === 0) {
+      buffer += stack1;
+    }
+    buffer += "\n  <hr>\n  <div>\n  ";
+    stack1 = helpers['if'].call(depth0, (depth0 && depth0.value), {
+      hash: {},
+      inverse: self.noop,
+      fn: self.program(8, program8, data),
       data: data
     });
     if (stack1 || stack1 === 0) {
@@ -11684,12 +11704,18 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
     return buffer;
   }
   function program4(depth0, data) {
+    return "active";
+  }
+  function program6(depth0, data) {
+    return "\n    <span class=\"recording\">Recording...</span>\n  ";
+  }
+  function program8(depth0, data) {
     var buffer = "", stack1;
     buffer += "\n    ";
     stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.value)), stack1 == null || stack1 === false ? stack1: stack1.converting), {
       hash: {},
-      inverse: self.program(7, program7, data),
-      fn: self.program(5, program5, data),
+      inverse: self.program(11, program11, data),
+      fn: self.program(9, program9, data),
       data: data
     });
     if (stack1 || stack1 === 0) {
@@ -11698,21 +11724,36 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
     buffer += "\n  ";
     return buffer;
   }
-  function program5(depth0, data) {
+  function program9(depth0, data) {
     return "\n      <p>Converting from wav format...</p>\n    ";
   }
-  function program7(depth0, data) {
+  function program11(depth0, data) {
     var buffer = "", stack1;
-    buffer += "\n      <audio controls=\"\" autoplay=\"\" name=\"media\">\n          <source src=\"" + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.value)), stack1 == null || stack1 === false ? stack1: stack1.dataURL)), typeof stack1 === functionType ? stack1.apply(depth0): stack1)) + "\" type=\"audio/webm; codecs=vorbis\">\n      </audio>\n      <a class=\"clear transparent-btn btn\">clear</a>\n    ";
+    buffer += "\n      ";
+    stack1 = helpers['if'].call(depth0, ((stack1 = (depth0 && depth0.value)), stack1 == null || stack1 === false ? stack1: stack1.dataURL), {
+      hash: {},
+      inverse: self.noop,
+      fn: self.program(12, program12, data),
+      data: data
+    });
+    if (stack1 || stack1 === 0) {
+      buffer += stack1;
+    }
+    buffer += "\n    ";
     return buffer;
   }
-  function program9(depth0, data) {
+  function program12(depth0, data) {
+    var buffer = "", stack1;
+    buffer += "\n        <audio controls=\"\" autoplay=\"\" name=\"media\">\n          <source src=\"" + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.value)), stack1 == null || stack1 === false ? stack1: stack1.dataURL)), typeof stack1 === functionType ? stack1.apply(depth0): stack1)) + "\" type=\"audio/webm; codecs=vorbis\">\n        </audio>\n        <a class=\"clear transparent-btn btn\">clear</a>\n      ";
+    return buffer;
+  }
+  function program14(depth0, data) {
     var buffer = "", stack1;
     buffer += "\n  ";
     stack1 = helpers['if'].call(depth0, (depth0 && depth0.wavConverterLoading), {
       hash: {},
-      inverse: self.program(12, program12, data),
-      fn: self.program(10, program10, data),
+      inverse: self.program(17, program17, data),
+      fn: self.program(15, program15, data),
       data: data
     });
     if (stack1 || stack1 === 0) {
@@ -11721,11 +11762,11 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
     buffer += "\n";
     return buffer;
   }
-  function program10(depth0, data) {
+  function program15(depth0, data) {
     return "\n    <h3>Loading Wav converter...</h3>\n  ";
   }
-  function program12(depth0, data) {
-    return "\n    <p>To use the audio recorder you need to load a 20 megabyte script\n      that coverts your recordings to a smaller format.\n    </p>\n    <a class=\"btn btn-default enable-audio\">Okay, do it!</a>\n    &nbsp;&nbsp;<input type=\"checkbox\" id=\"rememberWavConverter\" /> Remember my decision\n  ";
+  function program17(depth0, data) {
+    return "\n    <p>To use the audio recorder you need to load a 20 megabyte script\n      that coverts your recordings to a smaller format.\n    </p>\n    <a class=\"btn btn-default enable-audio\">Okay, do it!</a>\n    &nbsp;&nbsp;<input type=\"checkbox\" id=\"rememberWavConverter\" checked /> Remember my decision\n  ";
   }
   buffer += "<h4 class=\"widget-head\">";
   if (helper = helpers.name) {
@@ -11753,7 +11794,7 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
   buffer += "\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.wavConverterLoaded), {
     hash: {},
-    inverse: self.program(9, program9, data),
+    inverse: self.program(14, program14, data),
     fn: self.program(3, program3, data),
     data: data
   });
@@ -11995,7 +12036,7 @@ this["JST"]["helpInfo"] = Handlebars.template(function(Handlebars, depth0, helpe
     return "\n        <div class=\"modal-header\">\n          <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n          <h4 class=\"modal-title\">Tutorial</h4>\n        </div>\n      ";
   }
   function program3(depth0, data) {
-    return "\n        <center>\n          <a href class=\"dismiss\" data-dismiss=\"modal\">Dismiss Presentation</a>\n        </center>\n        ";
+    return "\n        <center>\n          <a href class=\"dismiss\" data-dismiss=\"modal\">End Tour</a>\n        </center>\n        ";
   }
   buffer += "<div class=\"modal fade\" id=\"helpModal\" role=\"dialog\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-content\">\n      ";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.help), {
@@ -12007,7 +12048,7 @@ this["JST"]["helpInfo"] = Handlebars.template(function(Handlebars, depth0, helpe
   if (stack1 || stack1 === 0) {
     buffer += stack1;
   }
-  buffer += "\n      <div class=\"modal-body help-body\">\n        <iframe \n          src=\"tutorial/index.html\"\n          seamless=\"seamless\" \n          style=\"width:100%;height:380px\"></iframe>\n        <br />\n        ";
+  buffer += "\n      <div class=\"modal-body help-body\">\n        <iframe \n          src=\"http://showandtell.github.io/slide-shows/tutorial\"\n          onload=\"this.contentWindow.focus()\"\n          seamless=\"seamless\" \n          style=\"width:100%;height:380px\"></iframe>\n        <br />\n        ";
   stack1 = helpers.unless.call(depth0, (depth0 && depth0.help), {
     hash: {},
     inverse: self.noop,
@@ -12085,32 +12126,20 @@ var initializeUI = function() {
       });
       $('.modal-backdrop').slice(1).remove();
     }
-    if (localStorage.getItem("downloadWavConverter") === "true") {
-      window.wavConverterLoading = true;
-      worker = createWebWorker();
-      worker.onready = function(event) {
-        window.wavConverterLoaded = true;
-        renderCurrentCard();
-      };
-    }
   }
   viewSchema = _.map(schema, function(widget, idx) {
     var currentView;
-    var isChrome = navigator.userAgent.match('Chrome') ? true: false;
     var WidgetView = Backbone.View.extend({
       template: JST[widget.type],
-      basicRender: function() {
-        this.$el.html(this.template({
+      basicRender: function(renderContext) {
+        this.$el.html(this.template(_.extend(renderContext || {}, {
           name: this.name,
-          value: this.value.get(),
-          wavConverterLoading: window.wavConverterLoading,
-          wavConverterLoaded: window.wavConverterLoaded,
-          audioCompatible: isChrome
-        }));
+          value: this.value.get()
+        })));
         return this;
       },
-      render: function() {
-        return this.basicRender();
+      render: function(renderContext) {
+        return this.basicRender(renderContext);
       },
       value: {
         get: function() {
@@ -12236,6 +12265,7 @@ var initializeUI = function() {
     });
   });
   $(document).on('click', '.import-presentation', function(evt) {
+    $('.modal').modal('hide');
     makeRepoPromise().fail(function(message) {
       alert("Couldn't get repo:\n" + message);
     }).done(function(repo) {
@@ -12579,17 +12609,37 @@ var mediaWidgets = {
     }
   },
   audio: {
+    initialize: function() {
+      if (localStorage.getItem("downloadWavConverter") === "true") this.loadWavConverter();
+    },
     recording: false,
+    inChrome: navigator.userAgent.match('Chrome') ? true: false,
+    loadWavConverter: function() {
+      var that = this;
+      this.wavConverterLoading = true;
+      worker = createWebWorker();
+      worker.onready = function(event) {
+        that.wavConverterLoading = false;
+        that.wavConverterLoaded = true;
+        that.render();
+      };
+    },
+    render: function() {
+      return this.basicRender({
+        recording: this.recording,
+        wavConverterLoading: this.wavConverterLoading,
+        wavConverterLoaded: this.wavConverterLoaded,
+        audioCompatible: this.inChrome
+      });
+    },
     record: function(evt) {
       var that = this;
       if (this.recording) return;
       this.recording = true;
-      $('.record').addClass('active');
       navigator.getUserMedia({audio: true}, onMediaSuccess, onMediaError);
       function done() {
-        $('.record').removeClass('active');
-        $('.recording').hide();
         that.recording = false;
+        that.render();
       }
       function onMediaSuccess(stream) {
         var type = 'webm';
@@ -12597,13 +12647,16 @@ var mediaWidgets = {
           var recordRTC = new RecordRTC(stream);
           recordRTC.startRecording();
           var startTime = new Date();
-          $('.recording').show();
+          var currentValue = that.value.get();
+          if (!currentValue) {
+            currentValue = {};
+            that.value.set(currentValue);
+          }
+          that.render();
           $(document).one('click', '.stop, .record', function(evt) {
             recordRTC.stopRecording();
-            var value = {converting: true};
-            that.value.set(value);
+            currentValue.converting = true;
             done();
-            that.render();
             var blob = recordRTC.getBlob();
             if (!blob) throw Error("Missing recordRTC blob.");
             convertStreams(blob, function(err, vorbisBlob) {
@@ -12613,14 +12666,14 @@ var mediaWidgets = {
                 console.log(vorbisBlob);
               }
               blobToDataURL(vorbisBlob, function(err, dataURL) {
-                _.extend(value, {
+                _.extend(currentValue, {
                   name: 'rec' + Number(startTime) + '.' + type,
                   startTime: startTime,
                   stopTime: new Date(),
                   dataURL: dataURL,
                   converting: false
                 });
-                if (that.value.get() === value) that.render();
+                if (that.value.get() === currentValue) that.render();
               });
             });
           });
@@ -12640,13 +12693,8 @@ var mediaWidgets = {
     enable: function() {
       var that = this;
       localStorage.setItem("downloadWavConverter", $('#rememberWavConverter').prop('checked'));
-      window.wavConverterLoading = true;
+      this.loadWavConverter();
       this.render();
-      worker = createWebWorker();
-      worker.onready = function(event) {
-        window.wavConverterLoaded = true;
-        that.render();
-      };
     },
     events: {
       'click .record': 'record',

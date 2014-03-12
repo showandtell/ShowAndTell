@@ -82,34 +82,21 @@ if("localStorage" in window) {
       });
     $('.modal-backdrop').slice(1).remove();
   }
-  if(localStorage.getItem("downloadWavConverter") === "true") {
-    window.wavConverterLoading = true;
-    //TODO: Better encapsulation for wav converter
-    worker = createWebWorker();
-    worker.onready = function(event) {
-      window.wavConverterLoaded = true;
-      renderCurrentCard();
-    };
-  }
 }
 
 viewSchema = _.map(schema, function(widget, idx){
   var currentView;
-  var isChrome = navigator.userAgent.match('Chrome') ? true : false;
   var WidgetView = Backbone.View.extend({
     template : JST[widget.type],
-    basicRender : function(){
-      this.$el.html(this.template({
+    basicRender : function(renderContext){
+      this.$el.html(this.template(_.extend(renderContext || {}, {
         name : this.name,
-        value : this.value.get(),
-        wavConverterLoading : window.wavConverterLoading,
-        wavConverterLoaded : window.wavConverterLoaded,
-        audioCompatible : isChrome
-      }));
+        value : this.value.get()
+      })));
       return this;
     },
-    render : function(){
-      return this.basicRender();
+    render : function(renderContext){
+      return this.basicRender(renderContext);
     },
     value : {
       get : function(){
@@ -253,6 +240,7 @@ $(document).on('click', '.import-github', function(evt) {
   });
 });
 $(document).on('click', '.import-presentation', function(evt) {
+  $('.modal').modal('hide');
   makeRepoPromise()
    .fail(function(message){
      alert("Couldn't get repo:\n" + message);
