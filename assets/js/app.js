@@ -1,4 +1,11 @@
-var _, schema, Backbone, mediaWidgets, exporters, importers, JST;
+var _,
+    schema,
+    Backbone,
+    mediaWidgets,
+    exporters,
+    importers,
+    JST,
+    Sortable;
 
 var viewSchema;
 //Make it correspond to a directory stucture so images can be saved to folders.
@@ -10,7 +17,7 @@ var DeckModel = Backbone.Model.extend({
     var json = this.toJSON();
     return _.extend({}, json, {
       cards : _.map(json.cards, function(card) {
-        return _.extend(_.omit(card, ['idx', 'isCurrent']), {
+        return _.extend(_.omit(card, ['isCurrent']), {
           image : _.omit(card.image, 'dataURL'),
           audio : _.omit(card.audio, 'dataURL')
         });
@@ -39,10 +46,9 @@ var renderCurrentCard = function(){
 };
 var renderDeck = function(){
   _.each(deck.get('cards'), function(card, idx){
-    card.idx = idx;
     card.isCurrent = (currentCard === card);
   });
-  $('.cards').html(deck.get('cards').map(JST.cardStub).join(''));
+  $('.cards').html(JST.cardStubs(deck.toJSON()));
   
   _.defer(function(){
     if(deck.deckSortable) return;//window.deckSortable.destroy();
@@ -55,7 +61,7 @@ var renderDeck = function(){
         var newCardArray = [];
         $container.children().each(function(idx, el){
           console.log(el);
-          var parsedNidx = parseInt(el.id, 10);
+          var parsedNidx = parseInt($(el).data('idx'), 10);
           newCardArray[idx] = deck.get('cards')[parsedNidx];
         });
         deck.set('cards', newCardArray);
@@ -68,8 +74,13 @@ var renderDeck = function(){
 
 if("localStorage" in window) {
   if(!localStorage.getItem("returnUser")) {
-    //TODO: Show help slide-show
-    //localStorage.setItem("returnUser", true);
+    var modal = $(JST.helpInfo())
+      .modal()
+      .on('hidden.bs.modal', function (e) {
+        localStorage.setItem("returnUser", true);
+        modal.remove();
+      });
+    $('.modal-backdrop').slice(1).remove();
   }
   if(localStorage.getItem("downloadWavConverter") === "true") {
     window.wavConverterLoading = true;
@@ -84,7 +95,7 @@ if("localStorage" in window) {
 
 viewSchema = _.map(schema, function(widget, idx){
   var currentView;
-  var isWindowsChrome = navigator.userAgent.match('Windows.*Chrome') ? true : false;
+  var isChrome = navigator.userAgent.match('Chrome') ? true : false;
   var WidgetView = Backbone.View.extend({
     template : JST[widget.type],
     basicRender : function(){
@@ -93,7 +104,7 @@ viewSchema = _.map(schema, function(widget, idx){
         value : this.value.get(),
         wavConverterLoading : window.wavConverterLoading,
         wavConverterLoaded : window.wavConverterLoaded,
-        audioCompatible : isWindowsChrome
+        audioCompatible : isChrome
       }));
       return this;
     },
@@ -125,7 +136,7 @@ renderCurrentCard();
 
 //Deck handlers
 $( document ).on("click", ".card-label", function( event, ui ) {
-  var cardIdx = parseInt($(event.currentTarget).prop('id'), 10);
+  var cardIdx = parseInt($(event.currentTarget).data('idx'), 10);
   currentCard = deck.get('cards')[cardIdx];
   console.assert(currentCard);
   $('textarea').blur();
@@ -143,13 +154,18 @@ $(document).on('click', '.add-card', function(evt) {
   renderDeck();
 });
 $(document).on('click', '.rm-card', function(evt) {
-  var currentCardIdx = currentCard.idx;
   var cards = deck.get('cards');
+  var newIdx = 0;
   var newCards = cards.filter(function(card, idx){
-    return (idx !== currentCardIdx);
+    if(card !== currentCard) {
+      return true;
+    } else {
+      newIdx = idx;
+      return false;
+    }
   });
   deck.set('cards', newCards);
-  currentCard = newCards[(currentCardIdx % newCards.length)];
+  currentCard = newCards[(newIdx % newCards.length)];
   renderDeck();
   renderCurrentCard();
 });
@@ -257,8 +273,12 @@ $(document).on('click', '.import-presentation', function(evt) {
    });
 });
 $(document).one('click', '.help', function(evt) {
-  //TODO: Remove when closed for 60 seconds to conserve memory
-  $('.help-body').html('<iframe src="tutorial/index.html" seamless="seamless" style="width:100%;height:340px"></iframe>');
+  var modal = $(JST.helpInfo({help : true}))
+    .modal()
+    .on('hidden.bs.modal', function (e) {
+      modal.remove();
+    });
+  $('.modal-backdrop').slice(1).remove();
 });
 
 $('.loading').remove();

@@ -11666,7 +11666,7 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
   data = data || {};
   var buffer = "", stack1, helper, functionType = "function", escapeExpression = this.escapeExpression, self = this;
   function program1(depth0, data) {
-    return "\n  <p class=\"audio-warning\">\n  So far the audio recorder only works in Chrome for Windows.\n  </p>\n";
+    return "\n  <p class=\"audio-warning\">\n  So far the audio recorder only works in Desktop verions of Chrome.\n  </p>\n";
   }
   function program3(depth0, data) {
     var buffer = "", stack1;
@@ -11727,16 +11727,7 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
   function program12(depth0, data) {
     return "\n    <p>To use the audio recorder you need to load a 20 megabyte script\n      that coverts your recordings to a smaller format.\n    </p>\n    <a class=\"btn btn-default enable-audio\">Okay, do it!</a>\n    &nbsp;&nbsp;<input type=\"checkbox\" id=\"rememberWavConverter\" /> Remember my decision\n  ";
   }
-  stack1 = helpers.unless.call(depth0, (depth0 && depth0.audioCompatible), {
-    hash: {},
-    inverse: self.noop,
-    fn: self.program(1, program1, data),
-    data: data
-  });
-  if (stack1 || stack1 === 0) {
-    buffer += stack1;
-  }
-  buffer += "\n<h4 class=\"widget-head\">";
+  buffer += "<h4 class=\"widget-head\">";
   if (helper = helpers.name) {
     stack1 = helper.call(depth0, {
       hash: {},
@@ -11750,6 +11741,16 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
     }): helper;
   }
   buffer += escapeExpression(stack1) + "</h4>\n";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.audioCompatible), {
+    hash: {},
+    inverse: self.noop,
+    fn: self.program(1, program1, data),
+    data: data
+  });
+  if (stack1 || stack1 === 0) {
+    buffer += stack1;
+  }
+  buffer += "\n";
   stack1 = helpers['if'].call(depth0, (depth0 && depth0.wavConverterLoaded), {
     hash: {},
     inverse: self.program(9, program9, data),
@@ -11831,17 +11832,66 @@ this["JST"]["text"] = Handlebars.template(function(Handlebars, depth0, helpers, 
   buffer += escapeExpression(stack1) + "</textarea>";
   return buffer;
 });
-this["JST"]["cardStub"] = Handlebars.template(function(Handlebars, depth0, helpers, partials, data) {
+this["JST"]["cardStubs"] = Handlebars.template(function(Handlebars, depth0, helpers, partials, data) {
   this.compilerInfo = [4, '>= 1.0.0'];
   helpers = this.merge(helpers, Handlebars.helpers);
   data = data || {};
-  var buffer = "", stack1, helper, options, functionType = "function", escapeExpression = this.escapeExpression, self = this, blockHelperMissing = helpers.blockHelperMissing;
+  var stack1, functionType = "function", escapeExpression = this.escapeExpression, self = this, blockHelperMissing = helpers.blockHelperMissing;
   function program1(depth0, data) {
+    var buffer = "", stack1, helper, options;
+    buffer += "\n  <div\n    data-idx=\"" + escapeExpression(((stack1 = (data == null || data === false ? data: data.index)), typeof stack1 === functionType ? stack1.apply(depth0): stack1)) + "\"\n    class=\"card-label ";
+    options = {
+      hash: {},
+      inverse: self.noop,
+      fn: self.program(2, program2, data),
+      data: data
+    };
+    if (helper = helpers.isCurrent) {
+      stack1 = helper.call(depth0, options);
+    } else {
+      helper = (depth0 && depth0.isCurrent);
+      stack1 = typeof helper === functionType ? helper.call(depth0, options): helper;
+    }
+    if (!helpers.isCurrent) {
+      stack1 = blockHelperMissing.call(depth0, stack1, {
+        hash: {},
+        inverse: self.noop,
+        fn: self.program(2, program2, data),
+        data: data
+      });
+    }
+    if (stack1 || stack1 === 0) {
+      buffer += stack1;
+    }
+    buffer += "\">\n      ";
+    stack1 = helpers['if'].call(depth0, (depth0 && depth0.previewImageURL), {
+      hash: {},
+      inverse: self.noop,
+      fn: self.program(4, program4, data),
+      data: data
+    });
+    if (stack1 || stack1 === 0) {
+      buffer += stack1;
+    }
+    buffer += "\n      ";
+    stack1 = helpers['if'].call(depth0, (depth0 && depth0.text), {
+      hash: {},
+      inverse: self.noop,
+      fn: self.program(6, program6, data),
+      data: data
+    });
+    if (stack1 || stack1 === 0) {
+      buffer += stack1;
+    }
+    buffer += "\n      <div class=\"label-handle\"></div>\n  </div>\n";
+    return buffer;
+  }
+  function program2(depth0, data) {
     return "current";
   }
-  function program3(depth0, data) {
+  function program4(depth0, data) {
     var buffer = "", stack1, helper;
-    buffer += "\n        <img src=\"";
+    buffer += "\n          <img src=\"";
     if (helper = helpers.previewImageURL) {
       stack1 = helper.call(depth0, {
         hash: {},
@@ -11854,12 +11904,12 @@ this["JST"]["cardStub"] = Handlebars.template(function(Handlebars, depth0, helpe
         data: data
       }): helper;
     }
-    buffer += escapeExpression(stack1) + "\"></img>\n    ";
+    buffer += escapeExpression(stack1) + "\"></img>\n      ";
     return buffer;
   }
-  function program5(depth0, data) {
+  function program6(depth0, data) {
     var buffer = "", stack1, helper;
-    buffer += "\n        <div class=\"label-text\">";
+    buffer += "\n          <div class=\"label-text\">";
     if (helper = helpers.text) {
       stack1 = helper.call(depth0, {
         hash: {},
@@ -11872,68 +11922,20 @@ this["JST"]["cardStub"] = Handlebars.template(function(Handlebars, depth0, helpe
         data: data
       }): helper;
     }
-    buffer += escapeExpression(stack1) + "</div>\n    ";
+    buffer += escapeExpression(stack1) + "</div>\n      ";
     return buffer;
   }
-  buffer += "<div class=\"card-label ";
-  options = {
+  stack1 = helpers.each.call(depth0, (depth0 && depth0.cards), {
     hash: {},
     inverse: self.noop,
     fn: self.program(1, program1, data),
     data: data
-  };
-  if (helper = helpers.isCurrent) {
-    stack1 = helper.call(depth0, options);
-  } else {
-    helper = (depth0 && depth0.isCurrent);
-    stack1 = typeof helper === functionType ? helper.call(depth0, options): helper;
-  }
-  if (!helpers.isCurrent) {
-    stack1 = blockHelperMissing.call(depth0, stack1, {
-      hash: {},
-      inverse: self.noop,
-      fn: self.program(1, program1, data),
-      data: data
-    });
-  }
-  if (stack1 || stack1 === 0) {
-    buffer += stack1;
-  }
-  buffer += "\" id=\"";
-  if (helper = helpers.idx) {
-    stack1 = helper.call(depth0, {
-      hash: {},
-      data: data
-    });
-  } else {
-    helper = (depth0 && depth0.idx);
-    stack1 = typeof helper === functionType ? helper.call(depth0, {
-      hash: {},
-      data: data
-    }): helper;
-  }
-  buffer += escapeExpression(stack1) + "\">\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.previewImageURL), {
-    hash: {},
-    inverse: self.noop,
-    fn: self.program(3, program3, data),
-    data: data
   });
   if (stack1 || stack1 === 0) {
-    buffer += stack1;
+    return stack1;
+  } else {
+    return '';
   }
-  buffer += "\n    ";
-  stack1 = helpers['if'].call(depth0, (depth0 && depth0.text), {
-    hash: {},
-    inverse: self.noop,
-    fn: self.program(5, program5, data),
-    data: data
-  });
-  if (stack1 || stack1 === 0) {
-    buffer += stack1;
-  }
-  buffer += "\n    <div class=\"label-handle\"></div>\n</div>";
-  return buffer;
 });
 this["JST"]["choosePresentation"] = Handlebars.template(function(Handlebars, depth0, helpers, partials, data) {
   this.compilerInfo = [4, '>= 1.0.0'];
@@ -11984,7 +11986,41 @@ this["JST"]["choosePresentation"] = Handlebars.template(function(Handlebars, dep
   buffer += "\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->";
   return buffer;
 });
-var _, schema, Backbone, mediaWidgets, exporters, importers, JST;
+this["JST"]["helpInfo"] = Handlebars.template(function(Handlebars, depth0, helpers, partials, data) {
+  this.compilerInfo = [4, '>= 1.0.0'];
+  helpers = this.merge(helpers, Handlebars.helpers);
+  data = data || {};
+  var buffer = "", stack1, self = this;
+  function program1(depth0, data) {
+    return "\n        <div class=\"modal-header\">\n          <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n          <h4 class=\"modal-title\">Tutorial</h4>\n        </div>\n      ";
+  }
+  function program3(depth0, data) {
+    return "\n        <center>\n          <a href class=\"dismiss\" data-dismiss=\"modal\">Dismiss Presentation</a>\n        </center>\n        ";
+  }
+  buffer += "<div class=\"modal fade\" id=\"helpModal\" role=\"dialog\">\n  <div class=\"modal-dialog\">\n    <div class=\"modal-content\">\n      ";
+  stack1 = helpers['if'].call(depth0, (depth0 && depth0.help), {
+    hash: {},
+    inverse: self.noop,
+    fn: self.program(1, program1, data),
+    data: data
+  });
+  if (stack1 || stack1 === 0) {
+    buffer += stack1;
+  }
+  buffer += "\n      <div class=\"modal-body help-body\">\n        <iframe \n          src=\"tutorial/index.html\"\n          seamless=\"seamless\" \n          style=\"width:100%;height:380px\"></iframe>\n        <br />\n        ";
+  stack1 = helpers.unless.call(depth0, (depth0 && depth0.help), {
+    hash: {},
+    inverse: self.noop,
+    fn: self.program(3, program3, data),
+    data: data
+  });
+  if (stack1 || stack1 === 0) {
+    buffer += stack1;
+  }
+  buffer += "\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div><!-- /.modal -->";
+  return buffer;
+});
+var _, schema, Backbone, mediaWidgets, exporters, importers, JST, Sortable;
 var viewSchema;
 var DeckModel = Backbone.Model.extend({
   addCard: function() {
@@ -11993,7 +12029,7 @@ var DeckModel = Backbone.Model.extend({
   toSmallJSON: function() {
     var json = this.toJSON();
     return _.extend({}, json, {cards: _.map(json.cards, function(card) {
-        return _.extend(_.omit(card, ['idx', 'isCurrent']), {
+        return _.extend(_.omit(card, ['isCurrent']), {
           image: _.omit(card.image, 'dataURL'),
           audio: _.omit(card.audio, 'dataURL')
         });
@@ -12018,10 +12054,9 @@ var initializeUI = function() {
   };
   var renderDeck = function() {
     _.each(deck.get('cards'), function(card, idx) {
-      card.idx = idx;
       card.isCurrent = (currentCard === card);
     });
-    $('.cards').html(deck.get('cards').map(JST.cardStub).join(''));
+    $('.cards').html(JST.cardStubs(deck.toJSON()));
     _.defer(function() {
       if (deck.deckSortable) return;
       var $container = $(".sortable");
@@ -12033,7 +12068,7 @@ var initializeUI = function() {
           var newCardArray = [];
           $container.children().each(function(idx, el) {
             console.log(el);
-            var parsedNidx = parseInt(el.id, 10);
+            var parsedNidx = parseInt($(el).data('idx'), 10);
             newCardArray[idx] = deck.get('cards')[parsedNidx];
           });
           deck.set('cards', newCardArray);
@@ -12043,7 +12078,13 @@ var initializeUI = function() {
     });
   };
   if ("localStorage"in window) {
-    if (!localStorage.getItem("returnUser")) {}
+    if (!localStorage.getItem("returnUser")) {
+      var modal = $(JST.helpInfo()).modal().on('hidden.bs.modal', function(e) {
+        localStorage.setItem("returnUser", true);
+        modal.remove();
+      });
+      $('.modal-backdrop').slice(1).remove();
+    }
     if (localStorage.getItem("downloadWavConverter") === "true") {
       window.wavConverterLoading = true;
       worker = createWebWorker();
@@ -12055,7 +12096,7 @@ var initializeUI = function() {
   }
   viewSchema = _.map(schema, function(widget, idx) {
     var currentView;
-    var isWindowsChrome = navigator.userAgent.match('Windows.*Chrome') ? true: false;
+    var isChrome = navigator.userAgent.match('Chrome') ? true: false;
     var WidgetView = Backbone.View.extend({
       template: JST[widget.type],
       basicRender: function() {
@@ -12064,7 +12105,7 @@ var initializeUI = function() {
           value: this.value.get(),
           wavConverterLoading: window.wavConverterLoading,
           wavConverterLoaded: window.wavConverterLoaded,
-          audioCompatible: isWindowsChrome
+          audioCompatible: isChrome
         }));
         return this;
       },
@@ -12091,7 +12132,7 @@ var initializeUI = function() {
   });
   renderCurrentCard();
   $(document).on("click", ".card-label", function(event, ui) {
-    var cardIdx = parseInt($(event.currentTarget).prop('id'), 10);
+    var cardIdx = parseInt($(event.currentTarget).data('idx'), 10);
     currentCard = deck.get('cards')[cardIdx];
     console.assert(currentCard);
     $('textarea').blur();
@@ -12109,13 +12150,18 @@ var initializeUI = function() {
     renderDeck();
   });
   $(document).on('click', '.rm-card', function(evt) {
-    var currentCardIdx = currentCard.idx;
     var cards = deck.get('cards');
+    var newIdx = 0;
     var newCards = cards.filter(function(card, idx) {
-      return (idx !== currentCardIdx);
+      if (card !== currentCard) {
+        return true;
+      } else {
+        newIdx = idx;
+        return false;
+      }
     });
     deck.set('cards', newCards);
-    currentCard = newCards[(currentCardIdx % newCards.length)];
+    currentCard = newCards[(newIdx % newCards.length)];
     renderDeck();
     renderCurrentCard();
   });
@@ -12206,7 +12252,10 @@ var initializeUI = function() {
     });
   });
   $(document).one('click', '.help', function(evt) {
-    $('.help-body').html('<iframe src="tutorial/index.html" seamless="seamless" style="width:100%;height:340px"></iframe>');
+    var modal = $(JST.helpInfo({help: true})).modal().on('hidden.bs.modal', function(e) {
+      modal.remove();
+    });
+    $('.modal-backdrop').slice(1).remove();
   });
   $('.loading').remove();
 };

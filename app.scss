@@ -288,10 +288,15 @@ body {
   border: 1px solid white;
 }
 .audio-warning {
-  background-color: rgb(255, 210, 230);
+  background-color: #FFFA88;
   color: black;
   padding: 5px;
+  margin: 8px -24px;
   font-weight: bold;
+  border: 1px solid rgba(0, 0, 0, 0.46);
+  border-left: 0;
+  border-right: 0;
+  text-align: center;
 }
 .clear {
   border: 1px solid white;

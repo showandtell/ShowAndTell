@@ -15,9 +15,10 @@ Developer info
 
 ### TODO
 
+* Github import dialog
+* audio attached to wrong file in simultaneous recording
 * implement gh oauth
-* ~~Add recording warning to firefox users.~~
-* Make a new version of the "help" presentation (and launch on first use)
+* ~~Make a new version of the "help" presentation (and launch on first use)~~
 * Try to encapsulate code for each media widget. Use polymer web components?
 * keep audio names and overwrite previous files when publishing.
 
