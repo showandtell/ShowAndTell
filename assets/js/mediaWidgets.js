@@ -99,19 +99,39 @@ var mediaWidgets = {
         }
     },
     audio : {
+        initialize : function(){
+          if(localStorage.getItem("downloadWavConverter") === "true") this.loadWavConverter();
+        },
         recording : false,
+        inChrome : navigator.userAgent.match('Chrome') ? true : false,
+        loadWavConverter : function(){
+          var that = this;
+          this.wavConverterLoading = true;
+          worker = createWebWorker();
+          worker.onready = function(event) {
+            that.wavConverterLoading = false;
+            that.wavConverterLoaded = true;
+            that.render();
+          };
+        },
+        render : function() {
+          return this.basicRender({
+            recording : this.recording,
+            wavConverterLoading : this.wavConverterLoading,
+            wavConverterLoaded : this.wavConverterLoaded,
+            audioCompatible : this.inChrome
+          });
+        },
         record : function(evt) {
             var that = this;
             if(this.recording) return;
             this.recording = true;
-            $('.record').addClass('active');
             
             navigator.getUserMedia({ audio: true }, onMediaSuccess, onMediaError);
         
             function done(){
-              $('.record').removeClass('active');
-              $('.recording').hide();
               that.recording = false;
+              that.render();
             }
         
             function onMediaSuccess(stream) {
@@ -120,15 +140,17 @@ var mediaWidgets = {
                 var recordRTC = new RecordRTC(stream); //, { type: 'audio/' + type });
                 recordRTC.startRecording();
                 var startTime = new Date();
-                $('.recording').show();
+                var currentValue = that.value.get();
+                if(!currentValue) {
+                  currentValue = {};
+                  that.value.set(currentValue);
+                }
+                that.render();
+                
                 $(document).one('click', '.stop, .record', function(evt) {
                   recordRTC.stopRecording();
-                  var value = {
-                    converting : true
-                  };
-                  that.value.set(value);
+                  currentValue.converting = true;
                   done();
-                  that.render();
                   var blob = recordRTC.getBlob();
                   if(!blob) throw Error("Missing recordRTC blob.");
                   convertStreams(blob, function(err, vorbisBlob){
@@ -138,14 +160,14 @@ var mediaWidgets = {
                       console.log(vorbisBlob);
                     }
                     blobToDataURL(vorbisBlob, function(err, dataURL){
-                      _.extend(value, {
+                      _.extend(currentValue, {
                         name : 'rec' + Number(startTime) + '.' + type,
                         startTime : startTime,
                         stopTime : new Date(),
                         dataURL : dataURL,
                         converting : false
                       });
-                      if(that.value.get() === value) that.render();
+                      if(that.value.get() === currentValue) that.render();
                     });
                   });
                 });
@@ -166,14 +188,8 @@ var mediaWidgets = {
         enable : function(){
           var that = this;
           localStorage.setItem("downloadWavConverter", $('#rememberWavConverter').prop('checked'));
-          //Download the ogg-to-wav code to enable this widget
-          window.wavConverterLoading = true;
+          this.loadWavConverter();
           this.render();
-          worker = createWebWorker();
-          worker.onready = function(event) {
-            window.wavConverterLoaded = true;
-            that.render();
-          };
         },
         events : {
             'click .record' : 'record',
