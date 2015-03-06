@@ -11744,7 +11744,7 @@ this["JST"]["audio"] = Handlebars.template(function(Handlebars, depth0, helpers,
   }
   function program12(depth0, data) {
     var buffer = "", stack1;
-    buffer += "\n        <audio controls=\"\" autoplay=\"\" name=\"media\">\n          <source src=\"" + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.value)), stack1 == null || stack1 === false ? stack1: stack1.dataURL)), typeof stack1 === functionType ? stack1.apply(depth0): stack1)) + "\" type=\"audio/webm; codecs=vorbis\">\n        </audio>\n        <a class=\"clear transparent-btn btn\">clear</a>\n      ";
+    buffer += "\n        <audio controls=\"\" name=\"media\">\n          <source src=\"" + escapeExpression(((stack1 = ((stack1 = (depth0 && depth0.value)), stack1 == null || stack1 === false ? stack1: stack1.dataURL)), typeof stack1 === functionType ? stack1.apply(depth0): stack1)) + "\" type=\"audio/webm; codecs=vorbis\">\n        </audio>\n        <a class=\"clear transparent-btn btn\">clear</a>\n      ";
     return buffer;
   }
   function program14(depth0, data) {
@@ -12617,8 +12617,8 @@ var mediaWidgets = {
     loadWavConverter: function() {
       var that = this;
       this.wavConverterLoading = true;
-      worker = createWebWorker();
-      worker.onready = function(event) {
+      window.worker = createWebWorker();
+      window.worker.onready = function(event) {
         that.wavConverterLoading = false;
         that.wavConverterLoaded = true;
         that.render();
@@ -12658,7 +12658,12 @@ var mediaWidgets = {
             currentValue.converting = true;
             done();
             var blob = recordRTC.getBlob();
-            if (!blob) throw Error("Missing recordRTC blob.");
+            if (!blob) {
+              alert("Could not get recordRTC blob.");
+              currentValue.converting = false;
+              this.render();
+              return;
+            }
             convertStreams(blob, function(err, vorbisBlob) {
               if (err) throw err;
               if (vorbisBlob.size === 0) {
@@ -12666,6 +12671,10 @@ var mediaWidgets = {
                 console.log(vorbisBlob);
               }
               blobToDataURL(vorbisBlob, function(err, dataURL) {
+                if (err) {
+                  alert("Error converting vorbisBlob to data url.");
+                  console.log(err);
+                }
                 _.extend(currentValue, {
                   name: 'rec' + Number(startTime) + '.' + type,
                   startTime: startTime,
@@ -12673,7 +12682,10 @@ var mediaWidgets = {
                   dataURL: dataURL,
                   converting: false
                 });
-                if (that.value.get() === currentValue) that.render();
+                if (that.value.get() === currentValue) {
+                  that.render();
+                  this.$('audio')[0].play();
+                }
               });
             });
           });
