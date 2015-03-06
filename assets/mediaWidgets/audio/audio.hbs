@@ -17,7 +17,7 @@
       <p>Converting from wav format...</p>
     {{else}}
       {{#if value.dataURL}}
-        <audio controls="" autoplay="" name="media">
+        <audio controls="" name="media">
           <source src="{{value.dataURL}}" type="audio/webm; codecs=vorbis">
         </audio>
         <a class="clear transparent-btn btn">clear</a>
